@@ -2,7 +2,7 @@
 @inject IAccountService AccountService;
 
 <h3>Create_Account</h3>
-<EditForm Model="_model" OnInvalidSubmit="CreateAccountAsync "/>
+<EditForm Model="_model" OnInvalidSubmit="CreateAccountAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div>
@@ -21,7 +21,8 @@
         <label>Currency</label>
         <InputSelect @bind-Value="_model.Currency">
             <option value="">Pick type</option>
-            <option value="_model.Currency">SEK</option>
+            <option value="@CurrencyType.SEK">SEK</option>
+            <option value="@CurrencyType.EURO">EURO</option>
         </InputSelect>
     </div>
     <div>
@@ -29,6 +30,13 @@
         <InputNumber @bind-Value="_model.InitialBalance"></InputNumber>
     </div>
     <button type="submit">Create</button>
+    <div>
+        <h4>Existing accounts:</h4>
+        <ul>
+            <li></li>
+        </ul>
+    </div>
+</EditForm>
 
 
     @code {
@@ -69,4 +77,7 @@
             }
         }
 
+        /*private void class DisplayAccounts => void GetAccounts()*/
+
     }
+
