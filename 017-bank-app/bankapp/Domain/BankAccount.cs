@@ -2,18 +2,50 @@ namespace bankapp.Domain;
 
 public class BankAccount : IBankAccount
 {
-    public Guid Id { get; }
-    public string Name { get; }
-    public string Currency { get; }
-    public decimal Balance { get; }
-    public DateTime LastUpdated { get; }
+    public BankAccount(Guid id, string name, string currency, decimal balance, DateTime lastUpdated)
+    {
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Currency = currency ?? throw new ArgumentNullException(nameof(currency));
+        Balance = balance;
+        LastUpdated = lastUpdated;
+    }
+
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public string Name { get; private set; }
+    public string Currency { get; private set; }
+    public decimal Balance { get; private set; }
+    public DateTime LastUpdated { get; private set; }
     public void Deposit(decimal amount)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Balance = Balance + amount;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 
     public void Withdraw(decimal amount)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Balance =  Balance - amount;
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine(e);
+            }
+            else if (amount > Balance)
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 }
