@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "017-bank-app", "017-bank-app\017-bank-app.csproj", "{1821827A-B02F-4035-8A54-40EB4A5C62DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bankapp", "bankapp\bankapp.csproj", "{1821827A-B02F-4035-8A54-40EB4A5C62DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
