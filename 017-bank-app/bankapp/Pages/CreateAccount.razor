@@ -1,0 +1,72 @@
+@page "/CreateAccount"
+@inject IAccountService AccountService;
+
+<h3>Create_Account</h3>
+<EditForm Model="_model" OnInvalidSubmit="CreateAccountAsync "/>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>Account Name</label>
+        <InputText @bind-Value="_model.Name" />
+    </div>
+    <div>
+        <label>Account Type</label>
+        <InputSelect @bind-Value="_model.AccountType">
+            <option value="">Pick type</option>
+            <option value="@AccountType.Deposit">Deposit Account</option>
+            <option value="@AccountType.Savings">Savings Account</option>
+        </InputSelect>
+    </div>
+    <div>
+        <label>Currency</label>
+        <InputSelect @bind-Value="_model.Currency">
+            <option value="">Pick type</option>
+            <option value="_model.Currency">SEK</option>
+        </InputSelect>
+    </div>
+    <div>
+        <label>Balance</label>
+        <InputNumber @bind-Value="_model.InitialBalance"></InputNumber>
+    </div>
+    <button type="submit">Create</button>
+
+
+    @code {
+        private readonly CreateAccountModel _model = new();
+
+        private Task CreateAccountAsync()
+        {
+            try
+            {
+                AccountService.CreateAccount(
+                    _model.Name,
+                    _model.AccountType,
+                    _model.Currency,
+                    _model.InitialBalance);
+
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+            return Task.CompletedTask;
+        }
+
+        private class CreateAccountModel
+        {
+            public string? Name { get; set; }
+            public AccountType AccountType { get; set; }
+            public string? Currency { get; set; }
+            public decimal InitialBalance { get; set; } = 0;
+
+            public void Clear()
+            {
+                Name = String.Empty;
+                AccountType = AccountType.Deposit;
+                Currency = "SEK";
+                InitialBalance = 0;
+            }
+        }
+
+    }
