@@ -7,7 +7,7 @@ public interface IBankAccount
     Guid Id { get; }
     string Name { get; }
     AccountType AccountType { get; }
-    string Currency { get; }
+    CurrencyType  CurrencyType{ get; }
     decimal Balance { get; }
     DateTime LastUpdated { get; }
     
