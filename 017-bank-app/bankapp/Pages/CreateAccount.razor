@@ -5,45 +5,44 @@
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <div>
-        <label>Account Name</label>
-        <InputText @bind-Value="_model.Name" />
+    <div class="accountfield">
+        <label>Account Name:</label>
+        <InputText class="inputfield" @bind-Value="_model.Name" />
     </div>
-    <div>
-        <label>Account Type</label>
-        <InputSelect @bind-Value="_model.AccountType">
+    <div class="accountfield">
+        <label>Account Type:</label>
+        <InputSelect class="inputfield" @bind-Value="_model.AccountType">
             <option value="">Pick type</option>
             <option value="@AccountType.Deposit">Deposit Account</option>
             <option value="@AccountType.Savings">Savings Account</option>
         </InputSelect>
     </div>
-    <div>
-        <label>Currency</label>
-        <InputSelect @bind-Value="_model.CurrencyType">
+    <div class="accountfield">
+        <label>Currency:</label>
+        <InputSelect class="inputfield" @bind-Value="_model.CurrencyType">
             <option value="">Pick type</option>
             <option value="@CurrencyType.SEK">SEK</option>
             <option value="@CurrencyType.EURO">EURO</option>
         </InputSelect>
     </div>
-    <div>
-        <label>Balance</label>
-        <InputNumber @bind-Value="_model.InitialBalance"></InputNumber>
+    <div class="accountfield">
+        <label>Balance:</label>
+        <InputNumber class="inputfield" @bind-Value="_model.InitialBalance"></InputNumber>
     </div>
-    <button type="submit">Create</button>
-    <div>
-        <h4>Existing accounts:</h4>
+    <button class="formbutton" type="submit">Create</button>
+    <div class="accountfield">
+        <h4 class="subhead">Existing accounts:</h4>
         @if (_accounts.Count == 0)
         {
-            <p>No accounts yet.</p>
-            <p>Create accounts above!</p>
+            <p>No accounts yet. Create accounts above!</p>
         }
         else
         {
             <ul>
                 @foreach(var account in _accounts)
                 {
-                    <li>
-                        <strong>@account.Name</strong> @account.AccountType - @account.Balance  @account.CurrencyType
+                    <li class="listitem">
+                        <strong>@account.Name</strong> [@account.AccountType account with balance: @account.Balance  @account.CurrencyType]
                         <small>(Last updated: @account.LastUpdated.ToLocalTime())</small>
                     </li>
                 }
