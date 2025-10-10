@@ -4,8 +4,6 @@ namespace bankapp.Interfaces;
 /// </summary>
 public interface IAccountService
 {
-    IBankAccount CreateAccount(string name, string currency, decimal initialBalance);
+    IBankAccount CreateAccount(string name, AccountType accountType, CurrencyType currencyType, decimal initialBalance);
     List<IBankAccount> GetAccounts();
-    // TODO
-// add account type
 }
