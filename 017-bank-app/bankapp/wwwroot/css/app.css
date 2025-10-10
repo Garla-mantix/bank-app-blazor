@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -100,4 +102,33 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+
+.listitem {
+    color: #1b6ec2;
+}
+
+.accountfield {
+    padding: 0.5rem;
+    
+}
+
+.inputfield {
+    position: absolute;
+    left: 27rem;
+}
+
+.formbutton {
+    background-color: #1b6ec2;
+    color: white;
+    border: none;
+    height: 2.5rem;
+    width: 6rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.subhead {
+    padding-top: 3.5rem;
 }
