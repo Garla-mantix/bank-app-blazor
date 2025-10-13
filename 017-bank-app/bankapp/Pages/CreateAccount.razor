@@ -1,7 +1,9 @@
 @page "/CreateAccount"
-@inject IAccountService AccountService;
+@inject IAccountService AccountService
+@inject IStorageService StorageService
 
-<h3>Create Account</h3>
+
+<h1>Create Account</h1>
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -51,39 +53,33 @@
     </div>
 </EditForm>
 
-
     @code {
         private readonly CreateAccountModel _model = new();
         private List<IBankAccount> _accounts = new();
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            _accounts = AccountService.GetAccounts().ToList();
-            base.OnInitialized();
+            _accounts = await AccountService.GetAccounts();
         }
 
-        private Task CreateAccountAsync()
+        private async Task CreateAccountAsync()
         {
             try
             {
-                Console.WriteLine(_model.Name);
-                
-                AccountService.CreateAccount(
+                await AccountService.CreateAccountAsync(
                     _model.Name,
                     _model.AccountType,
                     _model.CurrencyType,
                     _model.InitialBalance);
                 
-                _accounts = AccountService.GetAccounts().ToList();
+                _accounts = await AccountService.GetAccounts();
                 _model.Clear();
                 StateHasChanged();
-
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
             }
-            return Task.CompletedTask;
         }
 
         private class CreateAccountModel

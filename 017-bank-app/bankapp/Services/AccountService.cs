@@ -1,59 +1,47 @@
-using Blazored.LocalStorage;
-
 namespace bankapp.Services;
 
 public class AccountService : IAccountService
 {
-    // For local storage service
-    private const string StorageKey = "bank_accounts";
-    private readonly ILocalStorageService _localStorage;
-    
-    // List for accounts
-    private List<IBankAccount> _accounts = new();
-    
-    public AccountService(ILocalStorageService localStorage)
+    private const string StorageKey = "bankapp.accounts";
+    private readonly List<IBankAccount> _accounts = new();
+    private readonly IStorageService _storageService;
+    private bool isLoaded;
+    public AccountService(IStorageService storageService) => _storageService = storageService;
+
+    private async Task IsInitialized()
     {
-        _localStorage = localStorage;
+        if (isLoaded)
+        {
+            return;
+        }
+        var fromStorage = await _storageService.GetItemAsync <List<BankAccount>>(StorageKey);
+        _accounts.Clear();
+        if (fromStorage is { Count: > 0 })
+        {
+            _accounts.AddRange(fromStorage);
+        }
+        isLoaded = true;
     }
     
-   /// <summary>
-   /// Load saved accounts from local storage
-   /// </summary>
-    public async Task InitializeAsync()
+    private Task SaveAsync() => _storageService.SetItemAsync(StorageKey, _accounts);
+
+    public async Task<IBankAccount> CreateAccountAsync(string name, AccountType accountType, CurrencyType currencyType,
+        decimal initialBalance)
     {
-        var saved = await _localStorage.GetItemAsync<List<BankAccount>>(StorageKey);
-        if (saved != null)
-            _accounts = saved.Cast<IBankAccount>().ToList();
-    }
-    
-    /// <summary>
-    /// Returns current list of accounts in memory
-    /// </summary>
-    /// <returns>_accounts in memory</returns>
-    public List<IBankAccount> GetAccounts() => _accounts;
-    
-    /// <summary>
-    /// Creates new accounts, add them to list and local storage
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="accountType"></param>
-    /// <param name="currencyType"></param>
-    /// <param name="initialBalance"></param>
-    /// <returns></returns>
-    public IBankAccount CreateAccount(string name, AccountType accountType, CurrencyType currencyType, decimal initialBalance)
-    {
+        await IsInitialized();
         var account = new BankAccount(name, accountType, currencyType, initialBalance);
         _accounts.Add(account);
-        _ = SaveAccountsAsync();
+        await SaveAsync();
         return account;
     }
-    
-   /// <summary>
-   /// Saves list to local storage
-   /// </summary>
-    private async Task SaveAccountsAsync()
+
+    /// <summary>
+    /// Lists all accounts
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<IBankAccount>> GetAccounts()
     {
-        var concreteList = _accounts.Cast<BankAccount>().ToList();
-        await _localStorage.SetItemAsync(StorageKey, concreteList);
+        await IsInitialized();
+        return _accounts.Cast<IBankAccount>().ToList();
     }
 }

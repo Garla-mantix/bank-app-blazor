@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace bankapp.Domain;
 
 public class BankAccount : IBankAccount
@@ -16,6 +18,18 @@ public class BankAccount : IBankAccount
         CurrencyType= currencyType;
         Balance = initialBalance;
         LastUpdated = DateTime.Now;
+    }
+
+    [JsonConstructor]
+    public BankAccount(Guid id, string name, AccountType accountType, CurrencyType currencyType, decimal balance,
+        DateTime lastUpdated)
+    {
+        Id = id;
+        Name = name;
+        AccountType = accountType;
+        CurrencyType = currencyType;
+        Balance = balance;
+        LastUpdated = lastUpdated;
     }
     
     public void Deposit(decimal amount)

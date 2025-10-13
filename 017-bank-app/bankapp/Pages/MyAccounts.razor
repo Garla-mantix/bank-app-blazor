@@ -1,5 +1,5 @@
 @page "/MyAccounts"
-@inject IAccountService AccountService;
+@inject IAccountService AccountService
 
 <h1>Your Accounts</h1>
 
@@ -23,13 +23,12 @@ else
                 <li class="listitem">
                     <strong>@account.Name</strong>  
                     — @account.Balance @account.CurrencyType
-                    [Last changed: @(account.LastUpdated != default(DateTime) ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
-
+                    [Last changed: @(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
                 </li>
             }
         </ul>
     }
-    
+
     <h3>Savings Accounts</h3>
     @if (_savingsAccounts.Count == 0)
     {
@@ -43,7 +42,7 @@ else
                 <li class="listitem">
                     <strong>@account.Name</strong>  
                     — @account.Balance @account.CurrencyType 
-                    [Last changed: @(account.LastUpdated != default(DateTime) ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
+                    [Last changed: @(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
                 </li>
             }
         </ul>
@@ -54,16 +53,12 @@ else
     private List<IBankAccount> _depositAccounts = new();
     private List<IBankAccount> _savingsAccounts = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Gets all accounts from the service (if null set it to empty)
-        var allAccounts = AccountService.GetAccounts();
-        if (allAccounts == null)
-        {
-            allAccounts = new List<IBankAccount>();
-        }
+        // Get all accounts from the service
+        var allAccounts = await AccountService.GetAccounts() ?? new List<IBankAccount>();
 
-        // Separates them into Deposit and Savings
+        // Separate them into Deposit and Savings
         _depositAccounts = allAccounts
             .Where(a => a.AccountType == AccountType.Deposit)
             .ToList();
@@ -71,7 +66,5 @@ else
         _savingsAccounts = allAccounts
             .Where(a => a.AccountType == AccountType.Savings)
             .ToList();
-
-        base.OnInitialized();
     }
 }
