@@ -1,1 +1,77 @@
 @page "/MyAccounts"
+@inject IAccountService AccountService;
+
+<h1>Your Accounts</h1>
+
+@if ((_depositAccounts.Count + _savingsAccounts.Count) == 0)
+{
+    <p>You have no accounts yet.</p>
+    <p>Go to "Create Account" to get started!</p>
+}
+else
+{
+    <h3>Deposit Accounts</h3>
+    @if (_depositAccounts.Count == 0)
+    {
+        <p>No deposit accounts yet.</p>
+    }
+    else
+    {
+        <ul class="account-list">
+            @foreach (var account in _depositAccounts)
+            {
+                <li class="listitem">
+                    <strong>@account.Name</strong>  
+                    — @account.Balance @account.CurrencyType
+                    [Last changed: @(account.LastUpdated != default(DateTime) ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
+
+                </li>
+            }
+        </ul>
+    }
+    
+    <h3>Savings Accounts</h3>
+    @if (_savingsAccounts.Count == 0)
+    {
+        <p>No savings accounts yet.</p>
+    }
+    else
+    {
+        <ul class="account-list">
+            @foreach (var account in _savingsAccounts)
+            {
+                <li class="listitem">
+                    <strong>@account.Name</strong>  
+                    — @account.Balance @account.CurrencyType 
+                    [Last changed: @(account.LastUpdated != default(DateTime) ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
+                </li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    private List<IBankAccount> _depositAccounts = new();
+    private List<IBankAccount> _savingsAccounts = new();
+
+    protected override void OnInitialized()
+    {
+        // Gets all accounts from the service (if null set it to empty)
+        var allAccounts = AccountService.GetAccounts();
+        if (allAccounts == null)
+        {
+            allAccounts = new List<IBankAccount>();
+        }
+
+        // Separates them into Deposit and Savings
+        _depositAccounts = allAccounts
+            .Where(a => a.AccountType == AccountType.Deposit)
+            .ToList();
+
+        _savingsAccounts = allAccounts
+            .Where(a => a.AccountType == AccountType.Savings)
+            .ToList();
+
+        base.OnInitialized();
+    }
+}
