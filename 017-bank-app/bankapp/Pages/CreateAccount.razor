@@ -31,22 +31,9 @@
     </div>
     <button class="formbutton" type="submit">Create</button>
     <div class="accountfield">
-        <h4 class="subhead">Existing accounts:</h4>
-        @if (_accounts.Count == 0)
+        @if (!string.IsNullOrEmpty(_message))
         {
-            <p>No accounts yet. Create accounts above!</p>
-        }
-        else
-        {
-            <ul>
-                @foreach(var account in _accounts)
-                {
-                    <li class="listitem">
-                        <strong>@account.Name</strong> [@account.AccountType account with balance: @account.Balance  @account.CurrencyType]
-                        <small>(Last updated: @account.LastUpdated.ToLocalTime())</small>
-                    </li>
-                }
-            </ul>
+            <p class="@(_isSuccess ? "success-message" : "error-message")">@_message</p>
         }
     </div>
 </EditForm>
@@ -54,6 +41,8 @@
     @code {
         private readonly CreateAccountModel _model = new();
         private List<IBankAccount> _accounts = new();
+        private string? _message;
+        private bool _isSuccess;
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,19 +53,25 @@
         {
             try
             {
-                await AccountService.CreateAccountAsync(
-                    _model.Name,
-                    _model.AccountType,
-                    _model.CurrencyType,
-                    _model.InitialBalance);
-                
+                if (_model.Name != null)
+                {
+                    await AccountService.CreateAccountAsync(
+                        _model.Name,
+                        _model.AccountType,
+                        _model.CurrencyType,
+                        _model.InitialBalance);
+                }
+
                 _accounts = await AccountService.GetAccounts();
+                _message = $"Account \"{_model.Name}\" created successfully!";
+                _isSuccess = true;
                 _model.Clear();
                 StateHasChanged();
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
+                _message = $"Failed to create account: {exception.Message}!";
+                _isSuccess = false;
             }
         }
 

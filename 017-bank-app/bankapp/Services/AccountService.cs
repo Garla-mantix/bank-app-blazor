@@ -7,9 +7,10 @@ public class AccountService : IAccountService
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(IAccountRepository accountRepository, ITransactionRepository transactionRepository)
     {
-        _accountRepository = accountRepository;
+        _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
+        _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
     }
 
     /// <summary>
