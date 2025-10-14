@@ -2,11 +2,9 @@
 @inject IAccountService AccountService
 
 <h1>Deposit / Withdraw</h1>
-
 <EditForm Model="_model" OnValidSubmit="SubmitTransactionAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
     <div class="accountfield">
         <label>Select Account:</label>
         <InputSelect class="inputfield" @bind-Value="_model.SelectedAccountId">
@@ -19,7 +17,6 @@
             }
         </InputSelect>
     </div>
-
     <div class="accountfield">
         <label>Transaction Type:</label>
         <InputSelect class="inputfield" @bind-Value="_model.TransactionType">
@@ -28,15 +25,12 @@
             <option value="@TransactionType.Withdrawal">Withdraw</option>
         </InputSelect>
     </div>
-
     <div class="accountfield">
         <label>Amount:</label>
         <InputNumber class="inputfield" @bind-Value="_model.Amount" />
     </div>
-
     <button class="formbutton" type="submit">Submit</button>
 </EditForm>
-
 @if (!string.IsNullOrEmpty(_message))
 {
     <div class="accountfield">
