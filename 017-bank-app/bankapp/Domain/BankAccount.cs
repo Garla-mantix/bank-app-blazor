@@ -1,7 +1,7 @@
-using System.Text.Json.Serialization;
-
 namespace bankapp.Domain;
-
+/// <summary>
+/// Funcionality of accounts
+/// </summary>
 public class BankAccount : IBankAccount
 {
     public Guid Id { get; private set; } = Guid.NewGuid();

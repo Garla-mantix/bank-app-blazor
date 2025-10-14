@@ -1,9 +1,7 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.JSInterop;
-
-namespace bankapp.Services
-{
+namespace bankapp.Services;
+/// <summary>
+/// Service for local storage
+/// </summary>
     public class StorageService : IStorageService
     {
         private readonly IJSRuntime _jsRuntime;
@@ -31,4 +29,3 @@ namespace bankapp.Services
             return JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
         }
     }
-}

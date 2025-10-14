@@ -1,5 +1,7 @@
 namespace bankapp.Services;
-
+/// <summary>
+/// Service for accounts
+/// </summary>
 public class AccountService : IAccountService
 {
     private const string StorageKey = "bankapp.accounts";
