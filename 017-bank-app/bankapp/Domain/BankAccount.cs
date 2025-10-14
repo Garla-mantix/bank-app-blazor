@@ -13,7 +13,12 @@ public class BankAccount : IBankAccount
     
     public BankAccount(string name, AccountType accountType, CurrencyType currencyType, decimal initialBalance)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Name cannot be null or empty");
+        }
+
+        Name = name;
         AccountType = accountType;
         CurrencyType= currencyType;
         Balance = initialBalance;
@@ -34,35 +39,26 @@ public class BankAccount : IBankAccount
     
     public void Deposit(decimal amount)
     {
-        try
+        if (amount <= 0)
         {
-            Balance = Balance + amount;
+            throw new ArgumentException("Amount must be greater than zero", nameof(amount));
         }
-        catch (ArgumentOutOfRangeException e)
-        {
-            if (amount <= 0)
-            {
-                Console.WriteLine(e);
-            }
-        }
+        Balance += amount;
+        LastUpdated = DateTime.Now;
     }
 
     public void Withdraw(decimal amount)
     {
-        try
+        if (amount <= 0)
         {
-            Balance =  Balance - amount;
+            throw new ArgumentException("Amount must be greater than zero", nameof(amount));
         }
-        catch (ArgumentOutOfRangeException e)
+
+        if (amount > Balance)
         {
-            if (amount <= 0)
-            {
-                Console.WriteLine(e);
-            }
-            else if (amount > Balance)
-            {
-                Console.WriteLine(e);
-            }
+            throw new ArgumentException("Insufficient balance", nameof(amount));
         }
+        Balance -= amount;
+        LastUpdated = DateTime.Now;
     }
 }
