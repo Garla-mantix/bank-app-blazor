@@ -1,6 +1,6 @@
 namespace bankapp.Interfaces;
 /// <summary>
-/// Services for creating accounts and listing them
+/// Interface for creating accounts and listing them
 /// </summary>
 public interface IAccountService
 {
