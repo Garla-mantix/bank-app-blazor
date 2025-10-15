@@ -17,16 +17,34 @@ else
     }
     else
     {
-        <ul class="account-list">
+        <table class="table account-table">
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Currency</th>
+                <th>Last Updated</th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach (var account in _depositAccounts)
             {
-                <li class="listitem">
-                    <strong>@account.Name</strong>  
-                    — @account.Balance @account.CurrencyType
-                    [Last changed: @(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
-                </li>
+                <tr>
+                    <td><strong>@account.Name</strong></td>
+                    <td>@account.Balance.ToString("F2")</td>
+                    <td>@account.CurrencyType</td>
+                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("g") : "N/A")</td>
+                </tr>
             }
-        </ul>
+            </tbody>
+        </table>
+
     }
 
     <h3>Savings Accounts</h3>
@@ -36,16 +54,33 @@ else
     }
     else
     {
-        <ul class="account-list">
+        <table class="table account-table">
+            <colgroup>
+                <col />
+                <col />
+                <col />
+                <col />
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Balance</th>
+                <th>Currency</th>
+                <th>Last Updated</th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach (var account in _savingsAccounts)
             {
-                <li class="listitem">
-                    <strong>@account.Name</strong>  
-                    — @account.Balance @account.CurrencyType 
-                    [Last changed: @(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString() : "N/A")]
-                </li>
+                <tr>
+                    <td><strong>@account.Name</strong></td>
+                    <td>@account.Balance.ToString("F2")</td>
+                    <td>@account.CurrencyType</td>
+                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("g") : "N/A")</td>
+                </tr>
             }
-        </ul>
+            </tbody>
+        </table>
     }
 }
 

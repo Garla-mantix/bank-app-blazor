@@ -12,7 +12,7 @@
             @foreach (var account in _accounts)
             {
                 <option value="@account.Id">
-                    @account.Name (@account.Balance @account.CurrencyType)
+                    @account.Name (@account.Balance.ToString("F2") @account.CurrencyType)
                 </option>
             }
         </InputSelect>
@@ -64,7 +64,7 @@
                 _isSuccess = false;
                 return;
             }
-            if (_model.Amount <= 0)
+            if (_model.Amount is null or <= 0)
             {
                 _message = "Amount must be greater than zero.";
                 _isSuccess = false;
@@ -75,13 +75,13 @@
             switch (_model.TransactionType)
             {
                 case TransactionType.Deposit:
-                    await AccountService.DepositAsync(_model.SelectedAccountId, _model.Amount);
+                    await AccountService.DepositAsync(_model.SelectedAccountId, _model.Amount!.Value);
                     _message = $"Deposited {_model.Amount} successfully!";
                     _isSuccess = true;
                     break;
 
                 case TransactionType.Withdrawal:
-                    await AccountService.WithdrawAsync(_model.SelectedAccountId, _model.Amount);
+                    await AccountService.WithdrawAsync(_model.SelectedAccountId, _model.Amount!.Value);
                     _message = $"Withdrew {_model.Amount} successfully!";
                     _isSuccess = true;
                     break;
@@ -93,7 +93,7 @@
             }
             
             await LoadAccountsAsync();
-            _model.Amount = 0;
+            _model.Amount = null;
             StateHasChanged();
         }
         catch (Exception ex)
@@ -107,6 +107,6 @@
     {
         public Guid SelectedAccountId { get; set; }
         public TransactionType TransactionType { get; set; }
-        public decimal Amount { get; set; }
+        public decimal? Amount { get; set; }
     }
 }
