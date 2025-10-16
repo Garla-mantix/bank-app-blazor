@@ -8,7 +8,7 @@
     <div class="accountfield">
         <label>Select Account:</label>
         <InputSelect class="inputfield" @bind-Value="_model.SelectedAccountId">
-            <option value="">Choose account</option>
+            <option value="@Guid.Empty">Choose account</option>
             @foreach (var account in _accounts)
             {
                 <option value="@account.Id">
@@ -29,7 +29,7 @@
         <label>Amount:</label>
         <InputNumber class="inputfield" @bind-Value="_model.Amount" />
     </div>
-    <button class="formbutton" type="submit">Submit</button>
+    <button class="formbutton" type="submit">Apply</button>
 </EditForm>
 @if (!string.IsNullOrEmpty(_message))
 {
@@ -70,6 +70,8 @@
                 _isSuccess = false;
                 return;
             }
+            
+            var selectedAccountId = _model.SelectedAccountId;
 
             // Performs transaction
             switch (_model.TransactionType)
@@ -93,6 +95,7 @@
             }
             
             await LoadAccountsAsync();
+            _model.SelectedAccountId = selectedAccountId;
             _model.Amount = null;
             StateHasChanged();
         }
@@ -105,7 +108,7 @@
 
     private class TransactionModel
     {
-        public Guid SelectedAccountId { get; set; }
+        public Guid SelectedAccountId { get; set; } = Guid.Empty;
         public TransactionType TransactionType { get; set; }
         public decimal? Amount { get; set; }
     }

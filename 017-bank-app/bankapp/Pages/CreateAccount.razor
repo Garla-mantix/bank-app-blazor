@@ -59,7 +59,7 @@
                         _model.Name,
                         _model.AccountType,
                         _model.CurrencyType,
-                        _model.InitialBalance);
+                        _model.InitialBalance ?? 0m);
                 }
 
                 _accounts = await AccountService.GetAccounts();
@@ -80,14 +80,14 @@
             public string? Name { get; set; }
             public AccountType AccountType { get; set; }
             public CurrencyType CurrencyType{ get; set; }
-            public decimal InitialBalance { get; set; }
+            public decimal? InitialBalance { get; set; }
 
             public void Clear()
             {
                 Name = String.Empty;
                 AccountType = AccountType.Deposit;
                 CurrencyType = CurrencyType.SEK;
-                InitialBalance = 0;
+                InitialBalance = null;
             }
         }
     }
