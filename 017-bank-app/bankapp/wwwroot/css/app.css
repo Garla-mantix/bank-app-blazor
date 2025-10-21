@@ -174,3 +174,16 @@ code {
 .account-table col:nth-child(3) { width: 20%; } /* Currency */
 .account-table col:nth-child(4) { width: 30%; } /* Last Updated */
 
+/*History-page*/
+.deposit-row {
+    background-color: #e8f5e9; 
+}
+
+.withdrawal-row {
+    background-color: #ffebee; 
+}
+
+.transfer-row {
+    background-color: #e3f2fd; 
+}
+

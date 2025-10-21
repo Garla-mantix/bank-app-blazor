@@ -1,1 +1,225 @@
 @page "/History"
+@inject IAccountService AccountService
+
+<h1>History</h1>
+
+<EditForm Model="_filterModel">
+    <div class="accountfield">
+        <label>Select Account:</label>
+        <InputSelect TValue="Guid"
+                     class="inputfield"
+                     Value="_filterModel.SelectedAccountId"
+                     ValueChanged="(Guid v) => { _filterModel.SelectedAccountId = v; ApplyFilters(); }"
+                     ValueExpression="() => _filterModel.SelectedAccountId">
+            <option value="@Guid.Empty">Choose account</option>
+            @foreach (var account in _accounts)
+            {
+                <option value="@account.Id">@account.Name (@account.CurrencyType)</option>
+            }
+        </InputSelect>
+    </div>
+
+    @if (_filterModel.SelectedAccountId != Guid.Empty)
+    {
+        <div class="accountfield">
+            <label>Transaction Type:</label>
+            <InputSelect TValue="TransactionType?"
+                         class="inputfield"
+                         Value="_filterModel.TransactionType"
+                         ValueChanged="(TransactionType? v) => { _filterModel.TransactionType = v; ApplyFilters(); }"
+                         ValueExpression="() => _filterModel.TransactionType">
+                <option value="">All types</option>
+                <option value="@TransactionType.Deposit">Deposit</option>
+                <option value="@TransactionType.Withdrawal">Withdrawal</option>
+                <option value="@TransactionType.Transfer">Transfer</option>
+            </InputSelect>
+        </div>
+
+        <div class="accountfield">
+            <label>From Date:</label>
+            <InputDate TValue="DateTime?" class="inputfield"
+                       Value="_filterModel.FromDate"
+                       ValueChanged="(DateTime? v) => { _filterModel.FromDate = v; ApplyFilters(); }"
+                       ValueExpression="() => _filterModel.FromDate" />
+        </div>
+
+        <div class="accountfield">
+            <label>To Date:</label>
+            <InputDate TValue="DateTime?" class="inputfield"
+                       Value="_filterModel.ToDate"
+                       ValueChanged="(DateTime? v) => { _filterModel.ToDate = v; ApplyFilters(); }"
+                       ValueExpression="() => _filterModel.ToDate" />
+        </div>
+
+        <div class="accountfield">
+            <label>Min Amount:</label>
+            <InputNumber TValue="decimal?" class="inputfield"
+                         Value="_filterModel.MinAmount"
+                         ValueChanged="(decimal? v) => { _filterModel.MinAmount = v; ApplyFilters(); }"
+                         ValueExpression="() => _filterModel.MinAmount" />
+        </div>
+
+        <div class="accountfield">
+            <label>Max Amount:</label>
+            <InputNumber TValue="decimal?" class="inputfield"
+                         Value="_filterModel.MaxAmount"
+                         ValueChanged="(decimal? v) => { _filterModel.MaxAmount = v; ApplyFilters(); }"
+                         ValueExpression="() => _filterModel.MaxAmount" />
+        </div>
+
+        <div class="accountfield">
+            <label>Sort By:</label>
+            <InputSelect TValue="string" class="inputfield"
+                         Value="_filterModel.SortOption"
+                         ValueChanged="(string v) => { _filterModel.SortOption = v; ApplyFilters(); }"
+                         ValueExpression="() => _filterModel.SortOption">
+                <option value="date_desc">Date (Newest)</option>
+                <option value="date_asc">Date (Oldest)</option>
+                <option value="amount_desc">Amount (High → Low)</option>
+                <option value="amount_asc">Amount (Low → High)</option>
+                <option value="type">Type</option>
+            </InputSelect>
+        </div>
+
+        <button type="button" class="formbutton" @onclick="ResetFilters">Reset</button>
+    }
+</EditForm>
+
+@if (_filterModel.SelectedAccountId == Guid.Empty)
+{
+    <div class="accountfield"><p>Please select an account to view its history.</p></div>
+}
+else if (_transactions == null)
+{
+    <div class="accountfield"><p>Loading transactions...</p></div>
+}
+else if (!_transactions.Any())
+{
+    <div class="accountfield"><p>No transactions found.</p></div>
+}
+else
+{
+    <table class="table-auto w-full border-collapse border border-gray-300 mt-4 mb-5">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="border px-4 py-2">Date</th>
+                <th class="border px-4 py-2">Account</th>
+                <th class="border px-4 py-2">Type</th>
+                <th class="border px-4 py-2">Amount</th>
+                <th class="border px-4 py-2">Related Account</th>
+                <th class="border px-4 py-2">Description</th>
+                <th class="border px-4 py-2">Balance After</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in _transactions)
+            {
+                <tr class="@GetTransactionRowClass(t.Type)">
+                    <td class="border px-4 py-2">@t.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="border px-4 py-2">@GetAccountName(t.AccountId)</td>
+                    <td class="border px-4 py-2">@t.Type</td>
+                    <td class="border px-4 py-2">@t.Amount.ToString("F2")</td>
+                    <td class="border px-4 py-2">@t.RelatedAccountName</td>
+                    <td class="border px-4 py-2">@t.Description</td>
+                    <td class="border px-4 py-2">@t.BalanceAfter.ToString("F2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<BankAccount> _accounts = new();
+    private List<Transaction>? _transactions = new();
+    private readonly FilterModel _filterModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var accounts = await AccountService.GetAccounts();
+        _accounts = accounts.Cast<BankAccount>().ToList();
+        _transactions = new(); // start empty
+    }
+
+    private void ApplyFilters()
+    {
+        if (_filterModel.SelectedAccountId == Guid.Empty)
+        {
+            _transactions = new();
+            StateHasChanged();
+            return;
+        }
+
+        var selectedAccount = _accounts.FirstOrDefault(a => a.Id == _filterModel.SelectedAccountId);
+        if (selectedAccount == null)
+        {
+            _transactions = new();
+            StateHasChanged();
+            return;
+        }
+
+        IEnumerable<Transaction> query = selectedAccount.Transactions;
+        
+        var fromDate = _filterModel.FromDate?.Date;       
+        var toDateExclusive = _filterModel.ToDate?.Date.AddDays(1);
+
+        if (fromDate.HasValue)
+            query = query.Where(t => t.Timestamp >= fromDate.Value);
+
+        if (toDateExclusive.HasValue)
+            query = query.Where(t => t.Timestamp < toDateExclusive.Value);
+        
+        if (_filterModel.TransactionType.HasValue)
+            query = query.Where(t => t.Type == _filterModel.TransactionType.Value);
+
+        if (_filterModel.MinAmount.HasValue)
+            query = query.Where(t => t.Amount >= _filterModel.MinAmount.Value);
+
+        if (_filterModel.MaxAmount.HasValue)
+            query = query.Where(t => t.Amount <= _filterModel.MaxAmount.Value);
+        
+        query = _filterModel.SortOption switch
+        {
+            "date_asc"    => query.OrderBy(t => t.Timestamp),
+            "amount_asc"  => query.OrderBy(t => t.Amount),
+            "amount_desc" => query.OrderByDescending(t => t.Amount),
+            "type"        => query.OrderBy(t => t.Type),
+            _             => query.OrderByDescending(t => t.Timestamp)
+        };
+
+        _transactions = query.ToList();
+        StateHasChanged();
+    }
+
+    private void ResetFilters()
+    {
+        _filterModel.TransactionType = null;
+        _filterModel.FromDate = null;
+        _filterModel.ToDate = null;
+        _filterModel.MinAmount = null;
+        _filterModel.MaxAmount = null;
+        _filterModel.SortOption = "date_desc";
+        ApplyFilters();
+    }
+
+    private string GetAccountName(Guid id)
+        => _accounts.FirstOrDefault(a => a.Id == id)?.Name ?? "Unknown";
+
+    private static string GetTransactionRowClass(TransactionType type) => type switch
+    {
+        TransactionType.Deposit => "deposit-row",
+        TransactionType.Withdrawal => "withdrawal-row",
+        TransactionType.Transfer => "transfer-row",
+        _ => string.Empty
+    };
+
+    private class FilterModel
+    {
+        public Guid SelectedAccountId { get; set; } = Guid.Empty;
+        public TransactionType? TransactionType { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public decimal? MinAmount { get; set; }
+        public decimal? MaxAmount { get; set; }
+        public string SortOption { get; set; } = "date_desc";
+    }
+}
