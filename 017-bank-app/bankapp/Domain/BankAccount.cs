@@ -24,11 +24,14 @@ public class BankAccount : IBankAccount
         CurrencyType= currencyType;
         Balance = initialBalance;
         LastUpdated = DateTime.Now;
+        // Logs initial balance as a first deposit
+        Transactions.Add(new Transaction(Id, initialBalance, TransactionType.Deposit, 
+            Balance, null, "Initial deposit"));
     }
 
     [JsonConstructor]
     public BankAccount(Guid id, string name, AccountType accountType, CurrencyType currencyType, decimal balance,
-        DateTime lastUpdated)
+        DateTime lastUpdated, List<Transaction>? transactions = null)
     {
         Id = id;
         Name = name;
@@ -36,6 +39,7 @@ public class BankAccount : IBankAccount
         CurrencyType = currencyType;
         Balance = balance;
         LastUpdated = lastUpdated;
+        Transactions = transactions ?? new List<Transaction>();
     }
     
     public void Deposit(decimal amount)
@@ -45,8 +49,9 @@ public class BankAccount : IBankAccount
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
         }
         Balance += amount;
-        /*Transactions.Add(new Transaction(Guid.NewGuid(), DateTime.Now, TransactionType.Deposit, amount));*/
         LastUpdated = DateTime.Now;
+        Transactions.Add(new Transaction(Id, amount, TransactionType.Deposit, 
+            Balance, null, $"Deposit of {amount:F2}"));
     }
 
     public void Withdraw(decimal amount)
@@ -61,32 +66,36 @@ public class BankAccount : IBankAccount
             throw new ArgumentException("Insufficient balance", nameof(amount));
         }
         Balance -= amount;
-        /*Transactions.Add(new Transaction(Guid.NewGuid(), DateTime.Now, TransactionType.Withdrawal, amount));*/
         LastUpdated = DateTime.Now;
+        Transactions.Add(new Transaction(Id, amount, TransactionType.Withdrawal, 
+            Balance, null, $"Withdrawal of {amount:F2}"));
     }
     
-    /*public void TransferTo(BankAccount toAccount, decimal amount)
-    {
-        Från vilket konto
-        
-         Balance -= amount;
-         LastUpdated = DateTime.Now
-        _Transactions.Add(new Transaction
-        {
-            TransactionType = TransactionType.TransferOut,
-            Amount = amount,
-            BalanceAfter = Balance,
-            FromAccountId = Id,
-            ToAccountId = toAccount.Id,
-        });
-        
-         Till vilket konto
+    public void TransferTo(BankAccount toAccount, decimal amount)
+       {
+           if (toAccount == null)
+           {
+               throw new ArgumentNullException(nameof(toAccount));
+           }
+           if (toAccount.Id == this.Id)
+           {
+               throw new InvalidOperationException("Cannot transfer to the same account.");
+           }
+           if (amount <= 0)
+           {
+               throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
+           }
+           if (amount > Balance)
+           {
+               throw new InvalidOperationException("Insufficient funds.");
+           }
+           
+           // Makes the transfer
+           Balance -= amount;
+           toAccount.Balance += amount;
 
-        toAccount.Balance += amount;
-        toAccount.LastUpdated = DateTime.Now;
-        _transactions.Add(new Transaction
-        {
-            toAccount.Balance = 
-        })
-    }*/
+           // Records the transfer on both accounts
+           Transactions.Add(new Transaction(Id, amount, TransactionType.Transfer, Balance, toAccount.Name, $"Transfer to {toAccount.Name}"));
+           toAccount.Transactions.Add(new Transaction(toAccount.Id, amount, TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}"));
+       }
 }

@@ -10,8 +10,9 @@ public interface IBankAccount
     CurrencyType  CurrencyType{ get; }
     decimal Balance { get; }
     DateTime LastUpdated { get; }
+    List<Transaction> Transactions { get; }
     
     void Deposit(decimal amount);
     void Withdraw(decimal amount);
-    //void Transfer
+    void TransferTo(BankAccount toAccount, decimal amount);
 }
