@@ -11,10 +11,6 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 // Storage service
 builder.Services.AddScoped<IStorageService, StorageService>();
 
-// Repositories
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-
 // HTTP client
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

@@ -1,13 +1,5 @@
 namespace bankapp.Domain;
-/// <summary>
-/// Enum for types of transactions
-/// </summary>
-public enum TransactionType
-{
-    Deposit,
-    Withdrawal,
-    Transfer
-}
+
 public class Transaction
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
@@ -17,6 +9,10 @@ public class Transaction
     public TransactionType Type { get; private set; }
     public string? RelatedAccountName { get; private set; }
     public string? Description { get; private set; }
+    
+    // public Guid? FromAccountId { get; private set; }
+    // public Guid? ToAccountId { get; private set; }
+    // public decimal BalanceAfter {get; set;}
 
     [JsonConstructor]
     public Transaction(Guid id, Guid accountId, decimal amount, DateTime timestamp, TransactionType type, string? relatedAccountName, string? description)

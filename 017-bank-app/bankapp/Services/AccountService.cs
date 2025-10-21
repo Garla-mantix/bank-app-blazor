@@ -4,32 +4,34 @@ namespace bankapp.Services;
 /// </summary>
 public class AccountService : IAccountService
 {
-    private readonly IAccountRepository _accountRepository;
-    private readonly ITransactionRepository _transactionRepository;
+    private readonly IStorageService _storage;
+    private const string AccountsKey = "bankapp_accounts";
+    private const string TransactionsKey = "bankapp_transactions";
 
-    public AccountService(IAccountRepository accountRepository, ITransactionRepository transactionRepository)
+    public AccountService(IStorageService storage)
     {
-        _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
-        _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
+        _storage = storage;
     }
 
     /// <summary>
-    /// Creates a new account and saves it via the repository.
+    /// Creates a new account and saves it to local storage
     /// </summary>
     public async Task<IBankAccount> CreateAccountAsync(string name, AccountType accountType, CurrencyType currencyType, 
         decimal initialBalance)
     {
-        var account = new BankAccount(name, accountType, currencyType, initialBalance);
-        await _accountRepository.SaveAccountAsync(account);
-        return account;
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        var newAccount = new BankAccount(name, accountType, currencyType, initialBalance);
+        accounts.Add(newAccount);
+        await _storage.SetItemAsync(AccountsKey, accounts);
+        return newAccount;
     }
 
     /// <summary>
-    /// Lists all accounts.
+    /// Lists all accounts
     /// </summary>
     public async Task<List<IBankAccount>> GetAccounts()
     {
-        var accounts = await _accountRepository.GetAllAccountsAsync();
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         return accounts.Cast<IBankAccount>().ToList();
     }
 
@@ -38,7 +40,8 @@ public class AccountService : IAccountService
     /// </summary>
     public async Task<IBankAccount?> GetAccountByIdAsync(Guid id)
     {
-        return await _accountRepository.GetAccountByIdAsync(id);
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        return accounts.FirstOrDefault(a => a.Id == id);
     }
     
     /// <summary>
@@ -51,14 +54,13 @@ public class AccountService : IAccountService
             throw new ArgumentException("Deposit amount must be positive.", nameof(amount));
         }
         
-        var account = await _accountRepository.GetAccountByIdAsync(accountId)
-                      ?? throw new InvalidOperationException("Account not found.");
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        var account = accounts.FirstOrDefault(a => a.Id == accountId);
+        if (account == null) throw new ArgumentException("Account not found.");
 
         account.Deposit(amount);
-        await _accountRepository.SaveAccountAsync(account);
-
-        var transaction = new Transaction(account.Id, amount, TransactionType.Deposit);
-        await _transactionRepository.SaveTransactionAsync(transaction);
+        await SaveTransactionAsync(new Transaction(accountId, amount, TransactionType.Deposit));
+        await _storage.SetItemAsync(AccountsKey, accounts);
     }
 
     /// <summary>
@@ -69,22 +71,23 @@ public class AccountService : IAccountService
         if (amount <= 0)
         {
             throw new ArgumentException("Withdrawal amount must be positive.", nameof(amount));
-            
         }
         
-        var account = await _accountRepository.GetAccountByIdAsync(accountId)
-                      ?? throw new InvalidOperationException("Account not found.");
-
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        var account = accounts.FirstOrDefault(a => a.Id == accountId);
+        
+        if (account == null)
+        {
+            throw new ArgumentException("Account not found.");
+        }
         if (amount > account.Balance)
         {
             throw new InvalidOperationException("Insufficient funds.");
         }
         
         account.Withdraw(amount);
-        await _accountRepository.SaveAccountAsync(account);
-
-        var transaction = new Transaction(account.Id, amount, TransactionType.Withdrawal);
-        await _transactionRepository.SaveTransactionAsync(transaction);
+        await SaveTransactionAsync(new Transaction(accountId, amount, TransactionType.Withdrawal));
+        await _storage.SetItemAsync(AccountsKey, accounts);
     }
 
     /// <summary>
@@ -101,33 +104,25 @@ public class AccountService : IAccountService
             throw new ArgumentException("Transfer amount must be positive.", nameof(amount));
         }
         
-        var from = await _accountRepository.GetAccountByIdAsync(fromAccountId)
-                   ?? throw new InvalidOperationException("Source account not found.");
-
-        var to = await _accountRepository.GetAccountByIdAsync(toAccountId)
-                 ?? throw new InvalidOperationException("Destination account not found.");
+        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        var from = accounts.FirstOrDefault(a => a.Id == fromAccountId);
+        var to = accounts.FirstOrDefault(a => a.Id == toAccountId);
+        
+        if (from == null || to == null)
+            throw new ArgumentException("Invalid account(s).");
 
         if (amount > from.Balance)
         {
             throw new InvalidOperationException("Insufficient funds for transfer.");
         }
         
-        // Performs transfer
         from.Withdraw(amount);
         to.Deposit(amount);
 
-        // Saves accounts
-        await _accountRepository.SaveAccountAsync(from);
-        await _accountRepository.SaveAccountAsync(to);
+        await SaveTransactionAsync(new Transaction(from.Id, amount, TransactionType.Transfer, to.Name, $"Transfer to {to.Name}"));
+        await SaveTransactionAsync(new Transaction(to.Id, amount, TransactionType.Transfer, from.Name, $"Transfer from {from.Name}"));
 
-        // Records transactions
-        var outgoing = new Transaction(from.Id, amount, TransactionType.Transfer, relatedAccountName: to.Name, 
-            description: $"Transfer to {to.Name}");
-        var incoming = new Transaction(to.Id, amount, TransactionType.Transfer, relatedAccountName: from.Name, 
-            description: $"Transfer from {from.Name}");
-
-        await _transactionRepository.SaveTransactionAsync(outgoing);
-        await _transactionRepository.SaveTransactionAsync(incoming);
+        await _storage.SetItemAsync(AccountsKey, accounts);
     }
 
     /// <summary>
@@ -135,6 +130,18 @@ public class AccountService : IAccountService
     /// </summary>
     public async Task<List<Transaction>> GetTransactionsAsync(Guid accountId)
     {
-        return await _transactionRepository.GetTransactionsByAccountIdAsync(accountId);
+        var transactions = await _storage.GetItemAsync<List<Transaction>>(TransactionsKey) ?? new();
+        return transactions.Where(t => t.AccountId == accountId).ToList();
+    }
+    
+    /// <summary>
+    /// Saves transactions
+    /// </summary>
+    /// <param name="transaction"></param>
+    private async Task SaveTransactionAsync(Transaction transaction)
+    {
+        var transactions = await _storage.GetItemAsync<List<Transaction>>(TransactionsKey) ?? new();
+        transactions.Add(transaction);
+        await _storage.SetItemAsync(TransactionsKey, transactions);
     }
 }

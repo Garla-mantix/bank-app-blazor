@@ -1,4 +1,4 @@
-@page "/Transfers"
+@page "/Transfers"  
 @inject IAccountService AccountService
 
 <h1>Transfer</h1>
@@ -9,7 +9,7 @@
 
     <div class="accountfield">
         <label>From Account:</label>
-        <InputSelect class="inputfield" @bind-Value="_model.FromAccountId">
+        <InputSelect class="inputfield" TValue="Guid" @bind-Value="_model.FromAccountId">
             <option value="@Guid.Empty">Choose account</option>
             @foreach (var account in _accounts)
             {
@@ -22,7 +22,7 @@
 
     <div class="accountfield">
         <label>To Account:</label>
-        <InputSelect class="inputfield" @bind-Value="_model.ToAccountId">
+        <InputSelect class="inputfield" TValue="Guid" @bind-Value="_model.ToAccountId">
             <option value="@Guid.Empty">Choose account</option>
             @foreach (var account in _accounts.Where(a => a.Id != _model.FromAccountId))
             {
@@ -66,36 +66,35 @@
 
     private async Task SubmitTransferAsync()
     {
+        if (_model.FromAccountId == Guid.Empty)
+        {
+            _message = "Please select a source account.";
+            _isSuccess = false;
+            return;
+        }
+
+        if (_model.ToAccountId == Guid.Empty)
+        {
+            _message = "Please select a destination account.";
+            _isSuccess = false;
+            return;
+        }
+
+        if (_model.FromAccountId == _model.ToAccountId)
+        {
+            _message = "Cannot transfer to the same account.";
+            _isSuccess = false;
+            return;
+        }
+
+        if (_model.Amount is null or <= 0)
+        {
+            _message = "Amount must be greater than zero.";
+            _isSuccess = false;
+            return;
+        }
         try
         {
-            if (_model.FromAccountId == Guid.Empty)
-            {
-                _message = "Please select a source account.";
-                _isSuccess = false;
-                return;
-            }
-
-            if (_model.ToAccountId == Guid.Empty)
-            {
-                _message = "Please select a destination account.";
-                _isSuccess = false;
-                return;
-            }
-
-            if (_model.FromAccountId == _model.ToAccountId)
-            {
-                _message = "Cannot transfer to the same account.";
-                _isSuccess = false;
-                return;
-            }
-
-            if (_model.Amount is null or <= 0)
-            {
-                _message = "Amount must be greater than zero.";
-                _isSuccess = false;
-                return;
-            }
-            
             // Saves current selection
             var previousFromId = _model.FromAccountId;
             var previousToId = _model.ToAccountId;
