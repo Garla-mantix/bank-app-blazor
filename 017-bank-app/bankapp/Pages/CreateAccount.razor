@@ -1,6 +1,8 @@
 @page "/CreateAccount"
 @inject IAccountService AccountService
 
+<PageTitle>Create Account</PageTitle>
+
 <h1>Create Account</h1>
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
     <DataAnnotationsValidator />
@@ -53,6 +55,12 @@
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(_model.Name))
+                {
+                    _message = "Account name cannot be empty.";
+                    _isSuccess = false;
+                    return;
+                }
                 if (_model.Name != null)
                 {
                     await AccountService.CreateAccountAsync(

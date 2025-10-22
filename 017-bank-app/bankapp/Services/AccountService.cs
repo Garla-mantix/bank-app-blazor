@@ -1,6 +1,6 @@
 namespace bankapp.Services;
 /// <summary>
-/// Service for managing accounts. Using repositories for persistence.
+/// Service for managing accounts using local storage for persistence
 /// </summary>
 public class AccountService : IAccountService
 {
@@ -13,7 +13,7 @@ public class AccountService : IAccountService
     }
 
     /// <summary>
-    /// Creates a new account and saves it to local storage
+    /// Creates a new account, saves it to local storage and returns it
     /// </summary>
     public async Task<IBankAccount> CreateAccountAsync(string name, AccountType accountType, CurrencyType currencyType, 
         decimal initialBalance)
@@ -26,7 +26,7 @@ public class AccountService : IAccountService
     }
 
     /// <summary>
-    /// Lists all accounts
+    /// Retrieves all saved accounts
     /// </summary>
     public async Task<List<IBankAccount>> GetAccounts()
     {
@@ -70,7 +70,7 @@ public class AccountService : IAccountService
     }
 
     /// <summary>
-    /// Transfer money between two accounts and record two transactions.
+    /// Transfers money between two accounts and records two transactions.
     /// </summary>
     public async Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount)
     {

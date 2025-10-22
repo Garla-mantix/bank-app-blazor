@@ -1,5 +1,7 @@
 namespace bankapp.Domain;
-
+/// <summary>
+/// Schematic of a transaction
+/// </summary>
 public class Transaction
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
@@ -10,12 +12,13 @@ public class Transaction
     public string? RelatedAccountName { get; private set; }
     public decimal BalanceAfter {get; private set;}
     public string? Description { get; private set; }
-   
     
-    // public Guid? FromAccountId { get; private set; }
-    // public Guid? ToAccountId { get; private set; }
-   
-
+    // public Guid? FromAccountId { get; private set; } ------ remove?
+    // public Guid? ToAccountId { get; private set; }  ------ remove?
+    
+    /// <summary>
+    /// JSON constructor – recreates a transaction from storage
+    /// </summary>
     [JsonConstructor]
     public Transaction(Guid id, Guid accountId, decimal amount, DateTime timestamp, 
         TransactionType type, string? relatedAccountName, string? description, decimal balanceAfter)
@@ -31,15 +34,10 @@ public class Transaction
     }
     
     /// <summary>
-    /// Full constructor, used for transfers
+    /// Full constructor, used for creating a transfer-transaction
     /// </summary>
-    /// <param name="accountId"></param>
-    /// <param name="amount"></param>
-    /// <param name="type"></param>
-    /// <param name="relatedAccountName"></param>
-    /// <param name="description"></param>
-    /// <exception cref="ArgumentException"></exception>
-    public Transaction(Guid accountId, decimal amount, TransactionType type, decimal balanceAfter, string? relatedAccountName, string? description)
+    public Transaction(Guid accountId, decimal amount, TransactionType type, decimal balanceAfter, 
+        string? relatedAccountName, string? description)
     {
         if (amount <= 0)
         {
@@ -57,7 +55,7 @@ public class Transaction
     }
     
     /// <summary>
-    /// Shorter constructor for deposits and withdrawals
+    /// Shorter constructor, used for deposits and withdrawals
     /// </summary>
     public Transaction(Guid accountId, decimal amount, TransactionType type, decimal  balanceAfter)
     {

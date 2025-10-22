@@ -1,6 +1,6 @@
 namespace bankapp.Interfaces;
 /// <summary>
-/// Interface containing the BankAccount properties and methods
+/// Interface containing the structure and behavior of bank accounts 
 /// </summary>
 public interface IBankAccount
 {
@@ -16,3 +16,5 @@ public interface IBankAccount
     void Withdraw(decimal amount);
     void TransferTo(BankAccount toAccount, decimal amount);
 }
+
+// Are greyed out lines a problem?

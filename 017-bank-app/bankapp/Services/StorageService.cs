@@ -1,6 +1,6 @@
 namespace bankapp.Services;
 /// <summary>
-/// Service for local storage
+/// Service for saving and retrieving data from local storage
 /// </summary>
     public class StorageService : IStorageService
     {
@@ -14,12 +14,18 @@ namespace bankapp.Services;
         
         public StorageService(IJSRuntime jsRuntime) => _jsRuntime = jsRuntime;
         
+        /// <summary>
+        /// Serializes an object to JSON-format and saves it to local storage
+        /// </summary>
         public async Task SetItemAsync<T>(string key, T value)
         {
             var json = JsonSerializer.Serialize(value, _jsonSerializerOptions);
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
         }
 
+        /// <summary>
+        /// De-serializes an object from local storage
+        /// </summary>
         public async Task<T> GetItemAsync<T>(string key)
         {
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);

@@ -1,6 +1,8 @@
 @page "/History"
 @inject IAccountService AccountService
 
+<PageTitle>History</PageTitle>
+
 <h1>History</h1>
 
 <EditForm Model="_filterModel">
@@ -137,7 +139,7 @@ else
     {
         var accounts = await AccountService.GetAccounts();
         _accounts = accounts.Cast<BankAccount>().ToList();
-        _transactions = new(); // start empty
+        _transactions = new();
     }
 
     private void ApplyFilters()
