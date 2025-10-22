@@ -1,6 +1,8 @@
 @page "/DepositWithdraw"
 @inject IAccountService AccountService
 
+<PageTitle>Deposit / Withdraw</PageTitle>
+
 <h1>Deposit / Withdraw</h1>
 <EditForm Model="_model" OnValidSubmit="SubmitTransactionAsync">
     <DataAnnotationsValidator />

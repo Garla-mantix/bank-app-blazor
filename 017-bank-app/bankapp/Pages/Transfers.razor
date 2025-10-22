@@ -1,5 +1,7 @@
-@page "/Transfers"
+@page "/Transfer"
 @inject IAccountService AccountService
+
+<PageTitle>Transfer</PageTitle>
 
 <h1>Transfer</h1>
 
@@ -110,8 +112,7 @@
 
             // Refresh balances
             await LoadAccountsAsync();
-
-            // Keep 'From' as-is (common workflow), force user to pick a new 'To'
+            
             _model.ToAccountId = Guid.Empty;
             _model.Amount = null;
             StateHasChanged();
@@ -126,7 +127,7 @@
     private void OnFromAccountChanged(Guid selectedId)
     {
         _model.FromAccountId = selectedId;
-        _model.ToAccountId = Guid.Empty; // reset To every time From changes
+        _model.ToAccountId = Guid.Empty;
         StateHasChanged();
     }
 

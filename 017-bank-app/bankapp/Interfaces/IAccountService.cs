@@ -1,6 +1,6 @@
 namespace bankapp.Interfaces;
 /// <summary>
-/// Interface for creating accounts and listing them
+/// Interface for creating accounts, listing them and performing banking operations.
 /// </summary>
 public interface IAccountService
 {
@@ -12,3 +12,5 @@ public interface IAccountService
     Task<IBankAccount?> GetAccountByIdAsync(Guid id);
     Task<List<Transaction>> GetTransactionsAsync(Guid accountId);
 }
+
+// Are greyed out a problem?

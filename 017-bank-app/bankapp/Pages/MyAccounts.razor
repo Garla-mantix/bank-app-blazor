@@ -1,6 +1,8 @@
 @page "/MyAccounts"
 @inject IAccountService AccountService
 
+<PageTitle>My Accounts</PageTitle>
+
 <h1>Your Accounts</h1>
 
 @if ((_depositAccounts.Count + _savingsAccounts.Count) == 0)
