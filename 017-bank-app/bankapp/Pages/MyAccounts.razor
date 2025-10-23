@@ -1,14 +1,14 @@
 @page "/MyAccounts"
 @inject IAccountService AccountService
 
-<PageTitle>My Accounts</PageTitle>
+<PageTitle>Bankster - My Accounts</PageTitle>
 
 <h1>Your Accounts</h1>
 
 @if ((_depositAccounts.Count + _savingsAccounts.Count) == 0)
 {
     <p>You have no accounts yet.</p>
-    <p>Go to "Create Account" to get started!</p>
+    <p>Go to <a href="/CreateAccount"><strong>Create Account</strong></a> to get started!</p>
 }
 else
 {
@@ -41,7 +41,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
-                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("g") : "N/A")</td>
+                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }
             </tbody>
@@ -78,7 +78,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
-                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("g") : "N/A")</td>
+                    <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }
             </tbody>
