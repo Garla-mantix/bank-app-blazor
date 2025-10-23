@@ -1,7 +1,7 @@
 @page "/CreateAccount"
 @inject IAccountService AccountService
 
-<PageTitle>Create Account</PageTitle>
+<PageTitle>Bankster - Create Account</PageTitle>
 
 <h1>Create Account</h1>
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
@@ -36,6 +36,10 @@
         @if (!string.IsNullOrEmpty(_message))
         {
             <p class="@(_isSuccess ? "success-message" : "error-message")">@_message</p>
+            if (_isSuccess)
+            {
+                <p>See your created accounts under <strong><a href="MyAccounts">My Accounts</a></strong>.</p>
+            }
         }
     </div>
 </EditForm>
@@ -53,14 +57,20 @@
 
         private async Task CreateAccountAsync()
         {
+            if (string.IsNullOrWhiteSpace(_model.Name))
+            {
+                _message = "Account name cannot be empty.";
+                _isSuccess = false;
+                return;
+            }
+            if (!_model.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+            {
+                _message = "Account name can only contain letters and spaces.";
+                _isSuccess = false;
+                return;
+            }
             try
             {
-                if (string.IsNullOrWhiteSpace(_model.Name))
-                {
-                    _message = "Account name cannot be empty.";
-                    _isSuccess = false;
-                    return;
-                }
                 if (_model.Name != null)
                 {
                     await AccountService.CreateAccountAsync(

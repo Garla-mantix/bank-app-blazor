@@ -1,7 +1,7 @@
 @page "/History"
 @inject IAccountService AccountService
 
-<PageTitle>History</PageTitle>
+<PageTitle>Bankster - History</PageTitle>
 
 <h1>History</h1>
 
@@ -117,7 +117,7 @@ else
             @foreach (var t in _transactions)
             {
                 <tr class="@GetTransactionRowClass(t.Type)">
-                    <td class="border px-4 py-2">@t.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="border px-4 py-2">@t.Timestamp.ToString("d'/'M/yyyy (HH:mm)")</td>
                     <td class="border px-4 py-2">@GetAccountName(t.AccountId)</td>
                     <td class="border px-4 py-2">@t.Type</td>
                     <td class="border px-4 py-2">@t.Amount.ToString("F2")</td>
