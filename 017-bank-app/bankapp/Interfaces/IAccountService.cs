@@ -9,8 +9,5 @@ public interface IAccountService
     Task DepositAsync(Guid accountId, decimal amount);
     Task WithdrawAsync(Guid accountId, decimal amount);
     Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount); 
-    Task<IBankAccount?> GetAccountByIdAsync(Guid id);
-    Task<List<Transaction>> GetTransactionsAsync(Guid accountId);
 }
 
-// Are greyed out a problem?
