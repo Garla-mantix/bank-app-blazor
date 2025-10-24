@@ -21,6 +21,7 @@ namespace bankapp.Services;
         {
             var json = JsonSerializer.Serialize(value, _jsonSerializerOptions);
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+            Console.WriteLine("An item has been saved to storage.");
         }
 
         /// <summary>
@@ -30,8 +31,11 @@ namespace bankapp.Services;
         {
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
             if (string.IsNullOrWhiteSpace(json))
+            {
                 return default;
+            }
             
+            Console.WriteLine("An item has been fetched from storage.");
             return JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
         }
     }
