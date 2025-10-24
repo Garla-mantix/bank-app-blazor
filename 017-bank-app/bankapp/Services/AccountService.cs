@@ -22,6 +22,7 @@ public class AccountService : IAccountService
         var newAccount = new BankAccount(name, accountType, currencyType, initialBalance);
         accounts.Add(newAccount);
         await _storage.SetItemAsync(AccountsKey, accounts);
+        Console.WriteLine("A new account has been created.");
         return newAccount;
     }
 
@@ -31,6 +32,7 @@ public class AccountService : IAccountService
     public async Task<List<IBankAccount>> GetAccounts()
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        Console.WriteLine("Accounts have been fetched from storage.");
         return accounts.Cast<IBankAccount>().ToList();
     }
 
@@ -40,6 +42,7 @@ public class AccountService : IAccountService
     public async Task<IBankAccount?> GetAccountByIdAsync(Guid id)
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        Console.WriteLine("A single account has been fetched by ID.");
         return accounts.FirstOrDefault(a => a.Id == id);
     }
     
@@ -52,6 +55,7 @@ public class AccountService : IAccountService
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
         if (account == null) throw new ArgumentException("Account not found.");
 
+        Console.WriteLine($"Depositing {amount} to {account.Name}");
         account.Deposit(amount);
         await _storage.SetItemAsync(AccountsKey, accounts);
     }
@@ -65,6 +69,7 @@ public class AccountService : IAccountService
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
         if (account == null) throw new ArgumentException("Account not found.");
 
+        Console.WriteLine($"Withdrawing {amount} from {account.Name}");
         account.Withdraw(amount);
         await _storage.SetItemAsync(AccountsKey, accounts);
     }
@@ -81,8 +86,8 @@ public class AccountService : IAccountService
         if (from == null || to == null)
             throw new ArgumentException("Invalid account(s).");
         
+        Console.WriteLine($"Transfering {amount} from {from.Name} to {to.Name}");
         from.TransferTo(to, amount);
-
         await _storage.SetItemAsync(AccountsKey, accounts);
     }
 
@@ -93,6 +98,7 @@ public class AccountService : IAccountService
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
+        Console.WriteLine("Transactions have been fetched from storage.");
         return account?.Transactions ?? new List<Transaction>();
     }
 }
