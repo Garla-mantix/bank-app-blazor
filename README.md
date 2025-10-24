@@ -3,7 +3,7 @@
 ## Description
 
 Welcome to this project for a Blazor WebAssembly application using .NET 8.  
-I have previously done some websites and apps using HTML, CSS and Javascript (with Tailwind, React, Bootstrap, SCSS etc)  
+I have previously done some websites and apps using HTML, CSS and Javascript (with Tailwind, React, Bootstrap, SCSS etc)
 – but the goal during this project was to get familiar with Blazor and learn more about clean architecture principles.  
 The app simulates a simple banking system, where data persist using the browser's local storage. 
 
@@ -52,7 +52,7 @@ The app simulates a simple banking system, where data persist using the browser'
 
 ## Why this structure?
 *  Using this type of architecture, the goal is to create independent layers that are easier to maintain.  
-   For example we could replace parts of the infrastructure, e.g. swap the use of local storage for a real database later.  
+   For example we could replace parts of the infrastructure, e.g. swap the use of local storage for a real database later.
    The connections remain the same, we only need to change the end point, so to speak.
 * We divide responsibilities between several classes, so that each class does one thing well.  
   This creates better clarity, and if something breaks it probably easier to figure out where to look for the solution,  
