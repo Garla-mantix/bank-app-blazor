@@ -2,7 +2,7 @@
 
 ## Description
 
-Welcome to this project for a Blazor WebAssembly application using .NET 8.
+Welcome to this project for a Blazor WebAssembly application using .NET 8.  
 I have previously done some websites and apps using HTML, CSS and Javascript (with Tailwind, React, Bootstrap, SCSS etc) 
 – but the goal during this project was to get familiar with Blazor and learn more about clean architecture principles.
 The app simulates a simple banking system, where data persist using the browser's local storage. 
