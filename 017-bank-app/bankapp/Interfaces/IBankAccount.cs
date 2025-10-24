@@ -16,5 +16,3 @@ public interface IBankAccount
     void Withdraw(decimal amount);
     void TransferTo(BankAccount toAccount, decimal amount);
 }
-
-// Are greyed out lines a problem?

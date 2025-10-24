@@ -35,16 +35,6 @@ public class AccountService : IAccountService
         Console.WriteLine("Accounts have been fetched from storage.");
         return accounts.Cast<IBankAccount>().ToList();
     }
-
-    /// <summary>
-    /// Gets a single account by ID.
-    /// </summary>
-    public async Task<IBankAccount?> GetAccountByIdAsync(Guid id)
-    {
-        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
-        Console.WriteLine("A single account has been fetched by ID.");
-        return accounts.FirstOrDefault(a => a.Id == id);
-    }
     
     /// <summary>
     /// Deposits money into an account and records the transaction.
@@ -89,16 +79,5 @@ public class AccountService : IAccountService
         Console.WriteLine($"Transfering {amount} from {from.Name} to {to.Name}");
         from.TransferTo(to, amount);
         await _storage.SetItemAsync(AccountsKey, accounts);
-    }
-
-    /// <summary>
-    /// Get transaction history for an account.
-    /// </summary>
-    public async Task<List<Transaction>> GetTransactionsAsync(Guid accountId)
-    {
-        var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
-        var account = accounts.FirstOrDefault(a => a.Id == accountId);
-        Console.WriteLine("Transactions have been fetched from storage.");
-        return account?.Transactions ?? new List<Transaction>();
     }
 }
