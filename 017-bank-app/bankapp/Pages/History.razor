@@ -185,19 +185,26 @@ else
         var toDateExclusive = _filterModel.ToDate?.Date.AddDays(1);
 
         if (fromDate.HasValue)
+        {
             query = query.Where(t => t.Timestamp >= fromDate.Value);
-
+        }
         if (toDateExclusive.HasValue)
+        {
             query = query.Where(t => t.Timestamp < toDateExclusive.Value);
-        
+        }
         if (_filterModel.TransactionType.HasValue)
+        {
             query = query.Where(t => t.Type == _filterModel.TransactionType.Value);
-
+        }
         if (_filterModel.MinAmount.HasValue)
+        {
             query = query.Where(t => t.Amount >= _filterModel.MinAmount.Value);
-
+        }
         if (_filterModel.MaxAmount.HasValue)
+        {
             query = query.Where(t => t.Amount <= _filterModel.MaxAmount.Value);
+        }
+            
         
         /*Sorting results based on selections*/
         query = _filterModel.SortOption switch
