@@ -4,13 +4,19 @@
 <PageTitle>Bankster - Create Account</PageTitle>
 
 <h1>Create Account</h1>
+
+@*Form for account creation*@
 <EditForm Model="_model" OnValidSubmit="CreateAccountAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
+    
+    @*Label and inputfield for account name*@
     <div class="accountfield">
         <label>Account Name:</label>
         <InputText class="inputfield" @bind-Value="_model.Name" />
     </div>
+    
+    @*Label and dropdown menu for account type*@
     <div class="accountfield">
         <label>Account Type:</label>
         <InputSelect class="inputfield" @bind-Value="_model.AccountType">
@@ -19,6 +25,8 @@
             <option value="@AccountType.Savings">Savings Account</option>
         </InputSelect>
     </div>
+    
+    @*Label and dropdown menu for currency type*@
     <div class="accountfield">
         <label>Currency:</label>
         <InputSelect class="inputfield" @bind-Value="_model.CurrencyType">
@@ -27,11 +35,17 @@
             <option value="@CurrencyType.EURO">EURO</option>
         </InputSelect>
     </div>
+    
+    @*Label and inputfield for initial balance *@
     <div class="accountfield">
         <label>Balance:</label>
         <InputNumber class="inputfield" @bind-Value="_model.InitialBalance"></InputNumber>
     </div>
+    
+    @*Button for submitting form and creating account*@
     <button class="formbutton" type="submit">Create</button>
+    
+    @*Success or error messages*@
     <div class="accountfield">
         @if (!string.IsNullOrEmpty(_message))
         {
@@ -44,69 +58,79 @@
     </div>
 </EditForm>
 
-    @code {
-        private readonly CreateAccountModel _model = new();
-        private List<IBankAccount> _accounts = new();
-        private string? _message;
-        private bool _isSuccess;
+@code {
+    /*Variable holding user input for creating account*/
+    private readonly CreateAccountModel _model = new();
+    /*Existing accounts*/
+    private List<IBankAccount> _accounts = new();
+    /*Status message that gets assigned different values depending on validation*/
+    private string? _message;
+    /*Indicates whether account creation is successful or not*/
+    private bool _isSuccess;
 
-        protected override async Task OnInitializedAsync()
+    /*Initializing by loading existing accounts */
+    protected override async Task OnInitializedAsync()
+    {
+        _accounts = await AccountService.GetAccounts();
+    }
+
+    /*Async task for creating accounts*/
+    private async Task CreateAccountAsync()
+    {
+        /*Validation*/
+        if (string.IsNullOrWhiteSpace(_model.Name))
         {
+            _message = "Account name cannot be empty.";
+            _isSuccess = false;
+            return;
+        }
+        if (!_model.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+        {
+            _message = "Account name can only contain letters and spaces.";
+            _isSuccess = false;
+            return;
+        }
+        try
+        {
+            /*Creating account*/
+            if (_model.Name != null)
+            {
+                await AccountService.CreateAccountAsync(
+                    _model.Name,
+                    _model.AccountType,
+                    _model.CurrencyType,
+                    _model.InitialBalance ?? 0m);
+            }
+
             _accounts = await AccountService.GetAccounts();
+            _message = $"Account \"{_model.Name}\" created successfully!";
+            _isSuccess = true;
+            _model.Clear();
+            StateHasChanged();
         }
-
-        private async Task CreateAccountAsync()
+        catch (Exception exception)
         {
-            if (string.IsNullOrWhiteSpace(_model.Name))
-            {
-                _message = "Account name cannot be empty.";
-                _isSuccess = false;
-                return;
-            }
-            if (!_model.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-            {
-                _message = "Account name can only contain letters and spaces.";
-                _isSuccess = false;
-                return;
-            }
-            try
-            {
-                if (_model.Name != null)
-                {
-                    await AccountService.CreateAccountAsync(
-                        _model.Name,
-                        _model.AccountType,
-                        _model.CurrencyType,
-                        _model.InitialBalance ?? 0m);
-                }
-
-                _accounts = await AccountService.GetAccounts();
-                _message = $"Account \"{_model.Name}\" created successfully!";
-                _isSuccess = true;
-                _model.Clear();
-                StateHasChanged();
-            }
-            catch (Exception exception)
-            {
-                _message = $"Failed to create account: {exception.Message}!";
-                _isSuccess = false;
-            }
-        }
-
-        private class CreateAccountModel
-        {
-            public string? Name { get; set; }
-            public AccountType AccountType { get; set; }
-            public CurrencyType CurrencyType{ get; set; }
-            public decimal? InitialBalance { get; set; }
-
-            public void Clear()
-            {
-                Name = String.Empty;
-                AccountType = AccountType.Deposit;
-                CurrencyType = CurrencyType.SEK;
-                InitialBalance = null;
-            }
+            _message = $"Failed to create account: {exception.Message}!";
+            _isSuccess = false;
         }
     }
+
+    /*Model for creating accounts*/
+    private class CreateAccountModel
+    {
+        public string? Name { get; set; }
+        public AccountType AccountType { get; set; }
+        public CurrencyType CurrencyType{ get; set; }
+        public decimal? InitialBalance { get; set; }
+
+        /*Resets input fields*/
+        public void Clear()
+        {
+            Name = String.Empty;
+            AccountType = AccountType.Deposit;
+            CurrencyType = CurrencyType.SEK;
+            InitialBalance = null;
+        }
+    }
+}
 

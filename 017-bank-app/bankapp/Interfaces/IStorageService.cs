@@ -1,6 +1,6 @@
 namespace bankapp.Interfaces;
 /// <summary>
-/// Interface for saving and retrieving data from local storage
+/// Interface for saving and retrieving data from local storage.
 /// </summary>
 public interface IStorageService
 {

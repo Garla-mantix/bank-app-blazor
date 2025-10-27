@@ -10,4 +10,3 @@ public interface IAccountService
     Task WithdrawAsync(Guid accountId, decimal amount);
     Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount); 
 }
-

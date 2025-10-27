@@ -5,6 +5,7 @@
 
 <h1>Your Accounts</h1>
 
+@*Checking if there are any existing accounts*@
 @if ((_depositAccounts.Count + _savingsAccounts.Count) == 0)
 {
     <p>You have no accounts yet.</p>
@@ -13,12 +14,15 @@
 else
 {
     <h3>Deposit Accounts</h3>
+    
+    /*Checking if there are any deposit accounts*/
     @if (_depositAccounts.Count == 0)
     {
         <p>No deposit accounts yet.</p>
     }
     else
     {
+        /*Listing all deposit accounts*/
         <table class="table account-table">
             <colgroup>
                 <col />
@@ -50,12 +54,15 @@ else
     }
 
     <h3>Savings Accounts</h3>
+    
+    /*Checking if there are any existing savings accounts*/
     @if (_savingsAccounts.Count == 0)
     {
         <p>No savings accounts yet.</p>
     }
     else
     {
+        /*Listing all savings accounts*/
         <table class="table account-table">
             <colgroup>
                 <col />
@@ -87,12 +94,15 @@ else
 }
 
 @code {
+    /*Lists for existing deposit accounts*/
     private List<IBankAccount> _depositAccounts = new();
+    /*Lists for existing savings accounts*/
     private List<IBankAccount> _savingsAccounts = new();
 
+    /*Initialize by loading all accounts and separating them by type*/
     protected override async Task OnInitializedAsync()
     {
-        // Get all accounts from the service
+        // Fetch all accounts from the service
         var allAccounts = await AccountService.GetAccounts() ?? new List<IBankAccount>();
 
         // Separate them into Deposit and Savings
