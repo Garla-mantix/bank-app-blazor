@@ -1,6 +1,6 @@
 namespace bankapp.Interfaces;
 /// <summary>
-/// Interface containing the structure and behavior of bank accounts 
+/// Interface containing the structure and behavior of bank accounts.
 /// </summary>
 public interface IBankAccount
 {

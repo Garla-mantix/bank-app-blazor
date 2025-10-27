@@ -4,9 +4,13 @@
 <PageTitle>Bankster - Deposit / Withdraw</PageTitle>
 
 <h1>Deposit / Withdraw</h1>
+
+@*Form for deposits/withdrawals*@
 <EditForm Model="_model" OnValidSubmit="SubmitTransactionAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
+    
+    @*Dropdown menu for choosing between existing accounts*@
     <div class="accountfield">
         <label>Select Account:</label>
         <InputSelect class="inputfield" @bind-Value="_model.SelectedAccountId">
@@ -19,6 +23,8 @@
             }
         </InputSelect>
     </div>
+    
+    @*Dropdown menu for transaction types*@
     <div class="accountfield">
         <label>Transaction Type:</label>
         <InputSelect class="inputfield" @bind-Value="_model.TransactionType">
@@ -27,12 +33,18 @@
             <option value="@TransactionType.Withdrawal">Withdraw</option>
         </InputSelect>
     </div>
+    
+    @*Label and input field for amount to be transfered*@
     <div class="accountfield">
         <label>Amount:</label>
         <InputNumber class="inputfield" @bind-Value="_model.Amount" />
     </div>
+    
+    @*Button for making transaction*@
     <button class="formbutton" type="submit">Apply</button>
 </EditForm>
+
+@*Sucess or error message*@
 @if (!string.IsNullOrEmpty(_message))
 {
     <div class="accountfield">
@@ -41,25 +53,33 @@
 }
 
 @code {
+    /*Variable storing data for current transaction*/
     private readonly TransactionModel _model = new();
+    /*List of existing accounts*/
     private List<IBankAccount> _accounts = new();
+    /*Status message that gets assigned different values depending on validation*/
     private string? _message;
+    /*Indicates whether transaction went through or not*/
     private bool _isSuccess;
 
+    /*Initializing component by loading existing bank accounts to the UI*/
     protected override async Task OnInitializedAsync()
     {
         await LoadAccountsAsync();
     }
 
+    /*Async task for loading existing accounts*/
     private async Task LoadAccountsAsync()
     {
         _accounts = await AccountService.GetAccounts();
     }
 
+    /*Async task for making transactions*/
     private async Task SubmitTransactionAsync()
     {
         try
         {
+            /*Validation*/
             if (_model.SelectedAccountId == Guid.Empty)
             {
                 _message = "Please select an account.";
@@ -75,7 +95,7 @@
             
             var selectedAccountId = _model.SelectedAccountId;
 
-            // Performs transaction
+            /*Performs transaction*/
             switch (_model.TransactionType)
             {
                 case TransactionType.Deposit:
@@ -108,6 +128,7 @@
         }
     }
 
+    /*Model for transactions*/
     private class TransactionModel
     {
         public Guid SelectedAccountId { get; set; } = Guid.Empty;

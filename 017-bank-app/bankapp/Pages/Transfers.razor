@@ -5,10 +5,12 @@
 
 <h1>Transfer</h1>
 
+@*Form for transfers between accounts*@
 <EditForm Model="_model" OnValidSubmit="SubmitTransferAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
+    @*Label and dropdown menu for from-account*@
     <div class="accountfield">
         <label>From Account:</label>
         <InputSelect TValue="Guid" class="inputfield"
@@ -23,6 +25,7 @@
         </InputSelect>
     </div>
 
+    @*Label and dropdown menu for to-account*@
     <div class="accountfield">
         <label>To Account:</label>
         <InputSelect @key="_model.FromAccountId"
@@ -42,6 +45,7 @@
         </InputSelect>
     </div>
 
+    @*Label and input field for amount*@
     <div class="accountfield">
         <label>Amount:</label>
         <InputNumber TValue="decimal?" class="inputfield"
@@ -50,9 +54,11 @@
                      ValueExpression="() => _model.Amount" />
     </div>
 
+    @*Button for executing transfer*@
     <button class="formbutton" type="submit">Transfer</button>
 </EditForm>
 
+@*Success or error message*@
 @if (!string.IsNullOrEmpty(_message))
 {
     <div class="accountfield">
@@ -61,23 +67,31 @@
 }
 
 @code {
+    /*Variable holding data for the current transfer*/
     private readonly TransferModel _model = new();
+    /*List of existing accounts*/
     private List<IBankAccount> _accounts = new();
+    /*Status message that gets assigned different values depending on validation*/
     private string? _message;
+    /*Indicates whether transfer went through or not*/
     private bool _isSuccess;
 
+    /*Initialize by loading existing accounts*/
     protected override async Task OnInitializedAsync()
     {
         await LoadAccountsAsync();
     }
 
+    /*Fetching accounts from account service*/
     private async Task LoadAccountsAsync()
     {
         _accounts = await AccountService.GetAccounts();
     }
 
+    /*Async task for performing the transfer*/
     private async Task SubmitTransferAsync()
     {
+        /*Validation*/
         if (_model.FromAccountId == Guid.Empty)
         {
             _message = "Please select a source account.";
@@ -105,6 +119,7 @@
 
         try
         {
+            /*Make the transfer*/
             await AccountService.TransferAsync(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
 
             _message = $"Successfully transferred {_model.Amount:F2}!";
@@ -113,6 +128,7 @@
             // Refresh balances
             await LoadAccountsAsync();
             
+            /*Reset to-account and amount after transfer*/
             _model.ToAccountId = Guid.Empty;
             _model.Amount = null;
             StateHasChanged();
@@ -124,6 +140,7 @@
         }
     }
     
+    /*Make sure to-account is changed when new from-account is selected*/
     private void OnFromAccountChanged(Guid selectedId)
     {
         _model.FromAccountId = selectedId;
@@ -131,6 +148,7 @@
         StateHasChanged();
     }
 
+    /*Model storing selected accounts and transfer amount*/
     private class TransferModel
     {
         public Guid FromAccountId { get; set; } = Guid.Empty;

@@ -1,9 +1,11 @@
 namespace bankapp.Domain;
+
 /// <summary>
-/// Schematic of a transaction
+/// Schematic of a transaction.
 /// </summary>
 public class Transaction
 {
+    // Constants
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid AccountId { get; private set; }
     public decimal Amount { get; private set; }
@@ -13,11 +15,8 @@ public class Transaction
     public decimal BalanceAfter {get; private set;}
     public string? Description { get; private set; }
     
-    // public Guid? FromAccountId { get; private set; } ------ remove?
-    // public Guid? ToAccountId { get; private set; }  ------ remove?
-    
     /// <summary>
-    /// JSON constructor – recreates a transaction from storage
+    /// JSON constructor – recreates a transaction from storage.
     /// </summary>
     [JsonConstructor]
     public Transaction(Guid id, Guid accountId, decimal amount, DateTime timestamp, 
@@ -33,9 +32,7 @@ public class Transaction
         BalanceAfter = balanceAfter;
     }
     
-    /// <summary>
-    /// Full constructor, used for creating a transfer-transaction
-    /// </summary>
+    // Full constructor, used for creating a transfer-transaction.
     public Transaction(Guid accountId, decimal amount, TransactionType type, decimal balanceAfter, 
         string? relatedAccountName, string? description)
     {
@@ -54,9 +51,7 @@ public class Transaction
         BalanceAfter = balanceAfter;
     }
     
-    /// <summary>
-    /// Shorter constructor, used for deposits and withdrawals
-    /// </summary>
+    // Shorter constructor, used for deposits and withdrawals.
     public Transaction(Guid accountId, decimal amount, TransactionType type, decimal  balanceAfter)
     {
         if (amount <= 0)

@@ -1,9 +1,11 @@
 namespace bankapp.Domain;
+
 /// <summary>
 /// Schematic of a bank account – with functionality for deposit, withdrawals and transfers.
 /// </summary>
 public class BankAccount : IBankAccount
 {
+    // Constants
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string Name { get; private set; }
     public AccountType AccountType { get; private set; }
@@ -12,9 +14,7 @@ public class BankAccount : IBankAccount
     public DateTime LastUpdated { get; private set; }
     public List<Transaction> Transactions { get; private set; } = new();
     
-    /// <summary>
-    /// Constructor for creating accounts with an initial deposit.
-    /// </summary>
+    // Constructor for creating accounts with an initial deposit.
     public BankAccount(string name, AccountType accountType, CurrencyType currencyType, decimal initialBalance)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -49,9 +49,11 @@ public class BankAccount : IBankAccount
         Transactions = transactions ?? new List<Transaction>();
     }
     
-    /// <summary>
-    /// Method for deposits to the account
-    /// </summary>
+/// <summary>
+/// Deposits an amount to a bank account's balance
+/// </summary>
+/// <param name="amount">Amount to deposit</param>
+/// <exception cref="ArgumentException">Cannot deposit less than 1</exception>
     public void Deposit(decimal amount)
     {
         if (amount <= 0)
@@ -67,9 +69,11 @@ public class BankAccount : IBankAccount
             Balance, null, $"Deposit of {amount:F2}"));
     }
 
-    /// <summary>
-    /// Method for withdrawals from the account
-    /// </summary>
+/// <summary>
+/// Withdraws an amount from a bank account's balance
+/// </summary>
+/// <param name="amount">Amount to withdraw</param>
+/// <exception cref="ArgumentException">Cannot withdraw less than 1</exception>
     public void Withdraw(decimal amount)
     {
         if (amount <= 0)
@@ -89,9 +93,14 @@ public class BankAccount : IBankAccount
             Balance, null, $"Withdrawal of {amount:F2}"));
     }
     
-    /// <summary>
-    /// Method for transferring money between two accounts
-    /// </summary>
+   /// <summary>
+   /// Transfers funds between two accounts
+   /// </summary>
+   /// <param name="toAccount">Account to receive the transfer</param>
+   /// <param name="amount">Amount to transfer</param>
+   /// <exception cref="ArgumentNullException">Has to have a receiver account</exception>
+   /// <exception cref="InvalidOperationException">Cannot transfer to same account as sender</exception>
+   /// <exception cref="ArgumentException">Cannot transfer less than 1</exception>
     public void TransferTo(BankAccount toAccount, decimal amount)
        {
            if (toAccount == null)
