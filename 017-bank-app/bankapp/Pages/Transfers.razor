@@ -67,59 +67,66 @@
 }
 
 @code {
-    /*Variable holding data for the current transfer*/
+    // Variable holding data for the current transfer
     private readonly TransferModel _model = new();
-    /*List of existing accounts*/
+    
+    // List of existing accounts
     private List<IBankAccount> _accounts = new();
-    /*Status message that gets assigned different values depending on validation*/
+    
+    // Status message that gets assigned different values depending on validation
     private string? _message;
-    /*Indicates whether transfer went through or not*/
+    
+    // Indicates whether transfer went through or not
     private bool _isSuccess;
 
-    /*Initialize by loading existing accounts*/
+    // Initialize by loading existing accounts
     protected override async Task OnInitializedAsync()
     {
         await LoadAccountsAsync();
     }
 
-    /*Fetching accounts from account service*/
+    // Fetching accounts from account service
     private async Task LoadAccountsAsync()
     {
         _accounts = await AccountService.GetAccounts();
     }
 
-    /*Async task for performing the transfer*/
+    // Async task for performing the transfer
     private async Task SubmitTransferAsync()
     {
-        /*Validation*/
+        // Validation
         if (_model.FromAccountId == Guid.Empty)
         {
             _message = "Please select a source account.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
         if (_model.ToAccountId == Guid.Empty)
         {
             _message = "Please select a destination account.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
         if (_model.FromAccountId == _model.ToAccountId)
         {
             _message = "Cannot transfer to the same account.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
         if (_model.Amount is null or <= 0)
         {
             _message = "Amount must be greater than zero.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
 
         try
         {
-            /*Make the transfer*/
+            // Make the transfer
             await AccountService.TransferAsync(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
 
             _message = $"Successfully transferred {_model.Amount:F2}!";
@@ -128,7 +135,7 @@
             // Refresh balances
             await LoadAccountsAsync();
             
-            /*Reset to-account and amount after transfer*/
+            // Reset to-account and amount after transfer
             _model.ToAccountId = Guid.Empty;
             _model.Amount = null;
             StateHasChanged();
@@ -136,19 +143,22 @@
         catch (Exception ex)
         {
             _message = $"Error: {ex.Message}";
+            Console.WriteLine(_message);
             _isSuccess = false;
         }
     }
     
-    /*Make sure to-account is changed when new from-account is selected*/
+    // Make sure to-account is changed when new from-account is selected
     private void OnFromAccountChanged(Guid selectedId)
     {
         _model.FromAccountId = selectedId;
         _model.ToAccountId = Guid.Empty;
         StateHasChanged();
     }
-
-    /*Model storing selected accounts and transfer amount*/
+    
+    /// <summary>
+    /// Model storing selected accounts and transfer amount.
+    /// </summary>
     private class TransferModel
     {
         public Guid FromAccountId { get; set; } = Guid.Empty;

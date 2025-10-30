@@ -53,49 +53,54 @@
 }
 
 @code {
-    /*Variable storing data for current transaction*/
+    // Variable storing data for current transaction
     private readonly TransactionModel _model = new();
-    /*List of existing accounts*/
+    
+    // List of existing accounts
     private List<IBankAccount> _accounts = new();
-    /*Status message that gets assigned different values depending on validation*/
+    
+    // Status message that gets assigned different values depending on validation
     private string? _message;
-    /*Indicates whether transaction went through or not*/
+    
+    // Indicates whether transaction went through or not
     private bool _isSuccess;
 
-    /*Initializing component by loading existing bank accounts to the UI*/
+    // Initializing component by loading existing bank accounts to the UI
     protected override async Task OnInitializedAsync()
     {
         await LoadAccountsAsync();
     }
 
-    /*Async task for loading existing accounts*/
+    // Async task for loading existing accounts
     private async Task LoadAccountsAsync()
     {
         _accounts = await AccountService.GetAccounts();
     }
 
-    /*Async task for making transactions*/
+    // Async task for making transactions
     private async Task SubmitTransactionAsync()
     {
         try
         {
-            /*Validation*/
+            // Validation
             if (_model.SelectedAccountId == Guid.Empty)
             {
                 _message = "Please select an account.";
+                Console.WriteLine(_message);
                 _isSuccess = false;
                 return;
             }
             if (_model.Amount is null or <= 0)
             {
                 _message = "Amount must be greater than zero.";
+                Console.WriteLine(_message);
                 _isSuccess = false;
                 return;
             }
             
             var selectedAccountId = _model.SelectedAccountId;
 
-            /*Performs transaction*/
+            // Performs transaction
             switch (_model.TransactionType)
             {
                 case TransactionType.Deposit:
@@ -124,11 +129,14 @@
         catch (Exception ex)
         {
             _message = $"Error: {ex.Message}";
+            Console.WriteLine(_message);
             _isSuccess = false;
         }
     }
 
-    /*Model for transactions*/
+    /// <summary>
+    /// Model for transactions.
+    /// </summary>
     private class TransactionModel
     {
         public Guid SelectedAccountId { get; set; } = Guid.Empty;

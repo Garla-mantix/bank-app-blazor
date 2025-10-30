@@ -22,7 +22,7 @@ public class StorageService : IStorageService
     {
         var json = JsonSerializer.Serialize(value, _jsonSerializerOptions);
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
-        Console.WriteLine("An item has been saved to storage.");
+        Console.WriteLine("Serialized the item and saved it to storage.");
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class StorageService : IStorageService
             return default;
         }
             
-        Console.WriteLine("An item has been fetched from storage.");
+        Console.WriteLine("An item has been fetched from storage and de-serialized.");
         return JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
     }
 }

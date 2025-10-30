@@ -26,7 +26,7 @@
     @*Making sure an account has been selected before showing other filters*@
     @if (_filterModel.SelectedAccountId != Guid.Empty)
     {
-        /*Label and dropdown menu for transaction type*/
+        // Label and dropdown menu for transaction type
         <div class="accountfield">
             <label>Transaction Type:</label>
             <InputSelect TValue="TransactionType?"
@@ -41,7 +41,7 @@
             </InputSelect>
         </div>
 
-        /*Label and date picker for from-date*/
+        // Label and date picker for from-date
         <div class="accountfield">
             <label>From Date:</label>
             <InputDate TValue="DateTime?" class="inputfield"
@@ -50,7 +50,7 @@
                        ValueExpression="() => _filterModel.FromDate"/>
         </div>
 
-        /*Label and date picker for to-date*/
+        // Label and date picker for to-date
         <div class="accountfield">
             <label>To Date:</label>
             <InputDate TValue="DateTime?" class="inputfield"
@@ -59,7 +59,7 @@
                        ValueExpression="() => _filterModel.ToDate"/>
         </div>
 
-        /*Label and input field for min amount*/
+        // Label and input field for min amount
         <div class="accountfield">
             <label>Min Amount:</label>
             <InputNumber TValue="decimal?" class="inputfield"
@@ -68,7 +68,7 @@
                          ValueExpression="() => _filterModel.MinAmount"/>
         </div>
 
-        /*Label and input field for max amount*/
+        // Label and input field for max amount
         <div class="accountfield">
             <label>Max Amount:</label>
             <InputNumber TValue="decimal?" class="inputfield"
@@ -77,7 +77,7 @@
                          ValueExpression="() => _filterModel.MaxAmount"/>
         </div>
 
-        /*Dropdown menu for sorting options*/
+        // Dropdown menu for sorting options
         <div class="accountfield">
             <label>Sort By:</label>
             <InputSelect TValue="string" class="inputfield"
@@ -92,7 +92,7 @@
             </InputSelect>
         </div>
 
-        /*Button to reset filters and sorting*/
+        // Button to reset filters and sorting
         <button type="button" class="formbutton" @onclick="ResetFilters">Reset</button>
     }
 </EditForm>
@@ -112,7 +112,7 @@ else if (!_transactions.Any())
 }
 else
 {
-    /*Table with columns for structuring transaction history*/
+    // Table with columns for structuring transaction history
     <table class="table-auto w-full border-collapse border border-gray-300 mt-4 mb-5">
         <thead class="bg-gray-100">
         <tr>
@@ -145,14 +145,16 @@ else
 }
 
 @code {
-    /*Account shown in UI*/
+    // Account shown in UI
     private List<BankAccount> _accounts = new();
-    /*Filtered transactions based on selection*/
+    
+    // Filtered transactions based on selection
     private List<Transaction>? _transactions = new();
-    /*Variable storing filter/sorting*/ 
+    
+    // Variable storing filter/sorting
     private readonly FilterModel _filterModel = new();
 
-    /*Initialize by loading accounts and creating new list for transactions*/
+    // Initialize by loading accounts and creating new list for transactions
     protected override async Task OnInitializedAsync()
     {
         var accounts = await AccountService.GetAccounts();
@@ -160,7 +162,7 @@ else
         _transactions = new();
     }
 
-    /*Applying filters*/
+    // Applying filters
     private void ApplyFilters()
     {
         if (_filterModel.SelectedAccountId == Guid.Empty)
@@ -206,7 +208,7 @@ else
         }
             
         
-        /*Sorting results based on selections*/
+        // Sorting results based on selections
         query = _filterModel.SortOption switch
         {
             "date_asc"    => query.OrderBy(t => t.Timestamp),
@@ -220,7 +222,7 @@ else
         StateHasChanged();
     }
 
-    /*Resetting filters*/
+    // Resetting filters
     private void ResetFilters()
     {
         _filterModel.TransactionType = null;
@@ -232,11 +234,11 @@ else
         ApplyFilters();
     }
 
-    /*Getting name of account from ID*/
+    // Getting name of account from ID
     private string GetAccountName(Guid id)
         => _accounts.FirstOrDefault(a => a.Id == id)?.Name ?? "Unknown";
 
-    /*Assigns CSS class according to transaction type*/
+    // Assigns CSS class according to transaction type
     private static string GetTransactionRowClass(TransactionType type) => type switch
     {
         TransactionType.Deposit => "deposit-row",
@@ -245,7 +247,7 @@ else
         _ => string.Empty
     };
 
-    /*Model storing filtering and sorting selections*/
+    // Model storing filtering and sorting selections
     private class FilterModel
     {
         public Guid SelectedAccountId { get; set; } = Guid.Empty;

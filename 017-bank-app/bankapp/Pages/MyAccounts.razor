@@ -15,26 +15,21 @@ else
 {
     <h3>Deposit Accounts</h3>
     
-    /*Checking if there are any deposit accounts*/
+    // Checking if there are any deposit accounts
     @if (_depositAccounts.Count == 0)
     {
         <p>No deposit accounts yet.</p>
     }
     else
     {
-        /*Listing all deposit accounts*/
+        // Listing all deposit accounts
         <table class="table account-table">
-            <colgroup>
-                <col />
-                <col />
-                <col />
-                <col />
-            </colgroup>
             <thead>
             <tr>
                 <th>Name</th>
                 <th>Balance</th>
                 <th>Currency</th>
+                <th>Interest Rate</th>
                 <th>Last Updated</th>
             </tr>
             </thead>
@@ -45,6 +40,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
+                    <td>@account.InterestRate.ToString("P2")</td>
                     <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }
@@ -55,26 +51,21 @@ else
 
     <h3>Savings Accounts</h3>
     
-    /*Checking if there are any existing savings accounts*/
+    // Checking if there are any existing savings accounts
     @if (_savingsAccounts.Count == 0)
     {
         <p>No savings accounts yet.</p>
     }
     else
     {
-        /*Listing all savings accounts*/
+        // Listing all savings accounts
         <table class="table account-table">
-            <colgroup>
-                <col />
-                <col />
-                <col />
-                <col />
-            </colgroup>
             <thead>
             <tr>
                 <th>Name</th>
                 <th>Balance</th>
                 <th>Currency</th>
+                <th>Interest Rate</th>
                 <th>Last Updated</th>
             </tr>
             </thead>
@@ -85,6 +76,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
+                    <td>@account.InterestRate.ToString("P2")</td>
                     <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }
@@ -94,14 +86,18 @@ else
 }
 
 @code {
-    /*Lists for existing deposit accounts*/
+    // List for existing deposit accounts
     private List<IBankAccount> _depositAccounts = new();
-    /*Lists for existing savings accounts*/
+    
+    // List for existing savings accounts
     private List<IBankAccount> _savingsAccounts = new();
 
-    /*Initialize by loading all accounts and separating them by type*/
+    // Initialize by loading all accounts and separating them by type
     protected override async Task OnInitializedAsync()
     {
+        // Apply interest
+        await AccountService.ApplyYearlyInterestAsync();
+        
         // Fetch all accounts from the service
         var allAccounts = await AccountService.GetAccounts() ?? new List<IBankAccount>();
 
