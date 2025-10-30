@@ -1,7 +1,10 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject SignedInStatus Auth
+@inject NavigationManager Nav
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="HandleNavigation">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
@@ -10,3 +13,26 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    /// <summary>
+    /// Ensures user is logged in before app is rendered. Otherwise, redirect to login-page.
+    /// </summary>
+    /// <param name="context">Contains information about the route the user is attempting to navigate to.</param>
+    /// <returns></returns>
+    private Task HandleNavigation(NavigationContext context)
+    {
+        var pageName = context.Path.Trim('/').ToLower();
+        
+        if (pageName == "signin")
+            return Task.CompletedTask;
+        
+        /*If not logged in, go to sign in-page*/
+        if (!Auth.IsSignedIn)
+        {
+            Nav.NavigateTo("/signin", true);
+        }
+
+        return Task.CompletedTask;
+    }
+}
