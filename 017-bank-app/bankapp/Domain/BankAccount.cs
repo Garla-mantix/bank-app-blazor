@@ -13,9 +13,12 @@ public class BankAccount : IBankAccount
     public decimal Balance { get; private set; }
     public DateTime LastUpdated { get; private set; }
     public List<Transaction> Transactions { get; private set; } = new();
+    public decimal InterestRate { get; private set; }
+    public DateTime? LastInterestApplied { get; private set; }
     
     // Constructor for creating accounts with an initial deposit.
-    public BankAccount(string name, AccountType accountType, CurrencyType currencyType, decimal initialBalance)
+    public BankAccount(string name, AccountType accountType, CurrencyType currencyType, 
+        decimal initialBalance, decimal? interestRate = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -27,6 +30,10 @@ public class BankAccount : IBankAccount
         CurrencyType= currencyType;
         Balance = initialBalance;
         LastUpdated = DateTime.Now;
+        // Applies interest rate only if account type is savings
+        InterestRate = (accountType == AccountType.Savings)
+            ? interestRate ?? 0.015m
+            : 0m;
         // Logs initial balance as a first deposit
         Transactions.Add(new Transaction(Id, initialBalance, TransactionType.Deposit, 
             Balance, null, "Initial deposit"));
@@ -38,7 +45,8 @@ public class BankAccount : IBankAccount
     /// </summary>
     [JsonConstructor]
     public BankAccount(Guid id, string name, AccountType accountType, CurrencyType currencyType, decimal balance,
-        DateTime lastUpdated, List<Transaction>? transactions = null)
+        DateTime lastUpdated, List<Transaction>? transactions = null, decimal interestRate = 0m, 
+        DateTime? lastInterestApplied = null)
     {
         Id = id;
         Name = name;
@@ -47,13 +55,15 @@ public class BankAccount : IBankAccount
         Balance = balance;
         LastUpdated = lastUpdated;
         Transactions = transactions ?? new List<Transaction>();
+        InterestRate = interestRate;
+        LastInterestApplied = lastInterestApplied;
     }
     
-/// <summary>
-/// Deposits an amount to a bank account's balance
-/// </summary>
-/// <param name="amount">Amount to deposit</param>
-/// <exception cref="ArgumentException">Cannot deposit less than 1</exception>
+    /// <summary>
+    /// Deposits an amount to a bank account's balance
+    /// </summary>
+    /// <param name="amount">Amount to deposit</param>
+    /// <exception cref="ArgumentException">Cannot deposit less than 1</exception>
     public void Deposit(decimal amount)
     {
         if (amount <= 0)
@@ -69,11 +79,11 @@ public class BankAccount : IBankAccount
             Balance, null, $"Deposit of {amount:F2}"));
     }
 
-/// <summary>
-/// Withdraws an amount from a bank account's balance
-/// </summary>
-/// <param name="amount">Amount to withdraw</param>
-/// <exception cref="ArgumentException">Cannot withdraw less than 1</exception>
+    /// <summary>
+    /// Withdraws an amount from a bank account's balance
+    /// </summary>
+    /// <param name="amount">Amount to withdraw</param>
+    /// <exception cref="ArgumentException">Cannot withdraw less than 1</exception>
     public void Withdraw(decimal amount)
     {
         if (amount <= 0)
@@ -129,5 +139,35 @@ public class BankAccount : IBankAccount
                Balance, toAccount.Name, $"Transfer to {toAccount.Name}"));
            toAccount.Transactions.Add(new Transaction(toAccount.Id, amount, 
                TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}"));
+       }
+   
+       public void ApplyYearlyInterest()
+       {
+           if (AccountType != AccountType.Savings || InterestRate <= 0)
+               return;
+
+           var now = DateTime.Now;
+
+           // Apply only if at least a year since last interest
+           if (LastInterestApplied == null || (now - LastInterestApplied.Value).TotalDays >= 1)
+           {
+               var interest = Balance * InterestRate;
+               if (interest > 0)
+               {
+                   Balance += interest;
+                   LastUpdated = now;
+                   LastInterestApplied = now;
+
+                   Transactions.Add(new Transaction(
+                       Id,
+                       interest,
+                       TransactionType.Deposit,
+                       Balance,
+                       null,
+                       "Yearly interest rate"
+                   ));
+                   Console.WriteLine("Yearly interest rate applied: " + InterestRate);
+               }
+           }
        }
 }

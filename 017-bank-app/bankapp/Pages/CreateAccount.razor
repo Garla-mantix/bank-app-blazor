@@ -59,40 +59,42 @@
 </EditForm>
 
 @code {
-    /*Variable holding user input for creating account*/
+    // Variable holding user input for creating account
     private readonly CreateAccountModel _model = new();
-    /*Existing accounts*/
+    // Existing accounts
     private List<IBankAccount> _accounts = new();
-    /*Status message that gets assigned different values depending on validation*/
+    // Status message that gets assigned different values depending on validation
     private string? _message;
-    /*Indicates whether account creation is successful or not*/
+    // Indicates whether account creation is successful or not
     private bool _isSuccess;
 
-    /*Initializing by loading existing accounts */
+    // Initializing by loading existing accounts
     protected override async Task OnInitializedAsync()
     {
         _accounts = await AccountService.GetAccounts();
     }
 
-    /*Async task for creating accounts*/
+    // Async task for creating accounts
     private async Task CreateAccountAsync()
     {
-        /*Validation*/
+        // Validation
         if (string.IsNullOrWhiteSpace(_model.Name))
         {
             _message = "Account name cannot be empty.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
         if (!_model.Name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
         {
             _message = "Account name can only contain letters and spaces.";
+            Console.WriteLine(_message);
             _isSuccess = false;
             return;
         }
         try
         {
-            /*Creating account*/
+            // Creating account
             if (_model.Name != null)
             {
                 await AccountService.CreateAccountAsync(
@@ -111,11 +113,12 @@
         catch (Exception exception)
         {
             _message = $"Failed to create account: {exception.Message}!";
+            Console.WriteLine(_message);
             _isSuccess = false;
         }
     }
 
-    /*Model for creating accounts*/
+    // Model for creating accounts
     private class CreateAccountModel
     {
         public string? Name { get; set; }
@@ -123,7 +126,7 @@
         public CurrencyType CurrencyType{ get; set; }
         public decimal? InitialBalance { get; set; }
 
-        /*Resets input fields*/
+        // Resets input fields
         public void Clear()
         {
             Name = String.Empty;

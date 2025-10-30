@@ -5,34 +5,38 @@
 
 <h1>Sign In</h1>
 
-@*Messages for success or failed login*@
+@* Messages for success or failed login *@
 @if (!string.IsNullOrEmpty(Message))
 {
     <p>@Message</p>
 }
 
-@*Label and input field for username*@
-<div class="accountfield">
-    <label>Username:</label>
-    <InputText @bind-Value="Username" class="inputfield" />
-</div>
+<EditForm Model="this" OnValidSubmit="HandleSignIn">
+    @* Label and input field for username *@
+    <div class="accountfield">
+        <label>Username:</label>
+        <InputText class="inputfield" @bind-Value="Username" />
+    </div>
 
-@*Label and input field for PIN password*@
-<div class="accountfield">
-    <label>PIN:</label>
-    <InputText @bind-Value="PIN" class="inputfield" type="password" />
-</div>
+    @* Label and input field for PIN password *@
+    <div class="accountfield">
+        <label>PIN:</label>
+        <InputText class="inputfield" @bind-Value="PIN" type="password" inputmode="numeric" maxlength="4" />
+    </div>
 
-@*Buttons for sign-up and sign-in*@
-<button class="formbutton" @onclick="HandleSignIn">Sign In</button>
-<button class="formbutton" @onclick="HandleSignUp">Sign Up</button>
+    @* Buttons for sign-up and sign-in *@
+    <button class="formbutton" type="submit">Sign In</button>
+    <button class="formbutton" type="button" @onclick="HandleSignUp">Sign Up</button>
+</EditForm>
 
 @code {
-    /* Variable storing username input */
+    // Variable storing username input
     private string Username = "";
-    /* Variable storing PIN input */
+    
+    // Variable storing PIN input
     private string PIN = "";
-    /* Variable for feedback message */
+    
+    // Variable for feedback message
     private string? Message;
 
     /// <summary>
@@ -44,14 +48,14 @@
         var savedUsername = await Storage.GetItemAsync<string>("username");
         var savedPIN = await Storage.GetItemAsync<string>("pin");
 
-        /* Check if an account exists */
+        /* Check if account exists */
         if (string.IsNullOrEmpty(savedUsername) || string.IsNullOrEmpty(savedPIN))
         {
             Message = "No account found.";
             return;
         }
 
-        /* Compare stored credentials with user input */
+        // Compare stored credentials with user input
         if (Username == savedUsername && PIN == savedPIN)
         {
             Auth.SignIn();
@@ -59,59 +63,53 @@
             return;
         }
 
-        /* Display error message if credentials do not match */
         Message = "Wrong username or PIN.";
     }
 
     /// <summary>
     /// Stores new username and PIN to local storage.
-    /// Validates username (letter and numbers only, max 8 chars) and PIN (4 digits).
+    /// Validates username (letters and numbers only, max 8 chars) and PIN (4 digits).
     /// </summary>
     private async Task HandleSignUp()
     {
-        /* Validates username */
+        // Validates username
         if (string.IsNullOrWhiteSpace(Username))
         {
             Message = "Username cannot be empty.";
             return;
         }
-
         if (Username.Length > 8)
         {
             Message = "Username must be max 8 characters.";
             return;
         }
-
         if (!Username.All(char.IsLetterOrDigit))
         {
             Message = "Username can only contain letters and numbers.";
             return;
         }
-
-        /* Validates PIN */
+        
+        // Validates PIN
         if (string.IsNullOrWhiteSpace(PIN))
         {
             Message = "PIN cannot be empty.";
             return;
         }
-
         if (!PIN.All(char.IsDigit))
         {
             Message = "PIN must contain digits only.";
             return;
         }
-
         if (PIN.Length != 4)
         {
             Message = "PIN must be exactly 4 digits.";
             return;
         }
-
-        /* Store username and PIN in local storage */
+        
+        // Store username and PIN in local storage
         await Storage.SetItemAsync("username", Username);
         await Storage.SetItemAsync("pin", PIN);
 
-        /* Inform user that account was created successfully */
         Message = "Account created! You can now sign in.";
     }
 }
