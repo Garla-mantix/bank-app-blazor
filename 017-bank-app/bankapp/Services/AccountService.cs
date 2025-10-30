@@ -44,7 +44,10 @@ public class AccountService : IAccountService
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
-        if (account == null) throw new ArgumentException("Account not found.");
+        if (account == null)
+        {
+            throw new ArgumentException("Account not found.");
+        }
 
         Console.WriteLine($"Depositing {amount} to {account.Name}");
         account.Deposit(amount);
@@ -58,7 +61,10 @@ public class AccountService : IAccountService
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
-        if (account == null) throw new ArgumentException("Account not found.");
+        if (account == null)
+        {
+            throw new ArgumentException("Account not found.");
+        }
 
         Console.WriteLine($"Withdrawing {amount} from {account.Name}");
         account.Withdraw(amount);
@@ -73,9 +79,11 @@ public class AccountService : IAccountService
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var from = accounts.FirstOrDefault(a => a.Id == fromAccountId);
         var to = accounts.FirstOrDefault(a => a.Id == toAccountId);
-        
+
         if (from == null || to == null)
+        {
             throw new ArgumentException("Invalid account(s).");
+        }
         
         Console.WriteLine($"Transfering {amount} from {from.Name} to {to.Name}");
         from.TransferTo(to, amount);
