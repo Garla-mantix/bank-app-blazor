@@ -32,7 +32,7 @@
         <InputSelect class="inputfield" @bind-Value="_model.CurrencyType">
             <option value="">Pick type</option>
             <option value="@CurrencyType.SEK">SEK</option>
-            <option value="@CurrencyType.EURO">EURO</option>
+            @*<option value="@CurrencyType.EURO">EURO</option>*@
         </InputSelect>
     </div>
     
@@ -61,10 +61,13 @@
 @code {
     // Variable holding user input for creating account
     private readonly CreateAccountModel _model = new();
+    
     // Existing accounts
     private List<IBankAccount> _accounts = new();
+    
     // Status message that gets assigned different values depending on validation
     private string? _message;
+    
     // Indicates whether account creation is successful or not
     private bool _isSuccess;
 
@@ -74,7 +77,9 @@
         _accounts = await AccountService.GetAccounts();
     }
 
-    // Async task for creating accounts
+    /// <summary>
+    /// Async task for creating accounts.
+    /// </summary>
     private async Task CreateAccountAsync()
     {
         // Validation
@@ -118,7 +123,9 @@
         }
     }
 
-    // Model for creating accounts
+  /// <summary>
+  /// Model for creating accounts.
+  /// </summary>
     private class CreateAccountModel
     {
         public string? Name { get; set; }
