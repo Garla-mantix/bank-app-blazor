@@ -34,6 +34,17 @@
         </InputSelect>
     </div>
     
+    @*Dropdown menu for budget categories (visible on withdrawal)*@
+    <div class="accountfield" hidden="@(_model.TransactionType != TransactionType.Withdrawal)">
+        <label>Category:</label>
+        <InputSelect class="inputfield" @bind-Value="_model.Category">
+            @foreach (var category in Enum.GetValues<BudgetCategory>())
+            {
+                <option value="@category">@category</option>
+            }
+        </InputSelect>
+    </div>
+    
     @*Label and input field for amount to be transfered*@
     <div class="accountfield">
         <label>Amount:</label>
@@ -110,7 +121,7 @@
                     break;
 
                 case TransactionType.Withdrawal:
-                    await AccountService.WithdrawAsync(_model.SelectedAccountId, _model.Amount!.Value);
+                    await AccountService.WithdrawAsync(_model.SelectedAccountId, _model.Amount!.Value, _model.Category);
                     _message = $"Withdrew {_model.Amount} successfully!";
                     _isSuccess = true;
                     break;
@@ -142,5 +153,6 @@
         public Guid SelectedAccountId { get; set; } = Guid.Empty;
         public TransactionType TransactionType { get; set; }
         public decimal? Amount { get; set; }
+        public BudgetCategory Category { get; set; } = BudgetCategory.None;
     }
 }

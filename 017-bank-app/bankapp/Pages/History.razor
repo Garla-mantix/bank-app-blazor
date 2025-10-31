@@ -40,6 +40,22 @@
                 <option value="@TransactionType.Transfer">Transfer</option>
             </InputSelect>
         </div>
+        
+        // Label and dropdown menu for budget categories
+        <div class="accountfield">
+            <label>Category:</label>
+            <InputSelect TValue="BudgetCategory?" class="inputfield"
+                         Value="_filterModel.Category"
+                         ValueChanged="(BudgetCategory? v) => { _filterModel.Category = v; ApplyFilters(); }"
+                         ValueExpression="() => _filterModel.Category">
+                <option value="">All categories</option>
+                @foreach (var category in Enum.GetValues<BudgetCategory>())
+                {
+                    <option value="@category">@category</option>
+                }
+            </InputSelect>
+        </div>
+
 
         // Label and date picker for from-date
         <div class="accountfield">
@@ -89,6 +105,7 @@
                 <option value="amount_desc">Amount (High → Low)</option>
                 <option value="amount_asc">Amount (Low → High)</option>
                 <option value="type">Type</option>
+                <option value="category">Category</option>
             </InputSelect>
         </div>
 
@@ -119,6 +136,7 @@ else
             <th class="border px-4 py-2">Date</th>
             <th class="border px-4 py-2">Account</th>
             <th class="border px-4 py-2">Type</th>
+            <th class="border px-4 py-2">Category</th>
             <th class="border px-4 py-2">Amount</th>
             <th class="border px-4 py-2">Related Account</th>
             <th class="border px-4 py-2">Description</th>
@@ -134,6 +152,7 @@ else
                     <td class="border px-4 py-2">@t.Timestamp.ToString("d'/'M/yyyy (HH:mm)")</td>
                     <td class="border px-4 py-2">@GetAccountName(t.AccountId)</td>
                     <td class="border px-4 py-2">@t.Type</td>
+                    <td class="border px-4 py-2">@t.Category</td>
                     <td class="border px-4 py-2">@t.Amount.ToString("F2")</td>
                     <td class="border px-4 py-2">@t.RelatedAccountName</td>
                     <td class="border px-4 py-2">@t.Description</td>
@@ -198,6 +217,10 @@ else
         {
             query = query.Where(t => t.Type == _filterModel.TransactionType.Value);
         }
+        if (_filterModel.Category.HasValue)
+        {
+            query = query.Where(t => t.Category == _filterModel.Category.Value);
+        }
         if (_filterModel.MinAmount.HasValue)
         {
             query = query.Where(t => t.Amount >= _filterModel.MinAmount.Value);
@@ -215,6 +238,7 @@ else
             "amount_asc"  => query.OrderBy(t => t.Amount),
             "amount_desc" => query.OrderByDescending(t => t.Amount),
             "type"        => query.OrderBy(t => t.Type),
+            "category"    => query.OrderBy(t => t.Category),
             _             => query.OrderByDescending(t => t.Timestamp)
         };
 
@@ -226,6 +250,7 @@ else
     private void ResetFilters()
     {
         _filterModel.TransactionType = null;
+        _filterModel.Category = null;
         _filterModel.FromDate = null;
         _filterModel.ToDate = null;
         _filterModel.MinAmount = null;
@@ -252,6 +277,7 @@ else
     {
         public Guid SelectedAccountId { get; set; } = Guid.Empty;
         public TransactionType? TransactionType { get; set; }
+        public BudgetCategory? Category { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public decimal? MinAmount { get; set; }

@@ -5,39 +5,44 @@
 
 <h1>Sign In</h1>
 
-@* Messages for success or failed login *@
-@if (!string.IsNullOrEmpty(Message))
-{
-    <p>@Message</p>
-}
-
 <EditForm Model="this" OnValidSubmit="HandleSignIn">
     @* Label and input field for username *@
     <div class="accountfield">
         <label>Username:</label>
-        <InputText class="inputfield" @bind-Value="Username" />
+        <InputText class="inputfield" @bind-Value="_username" />
     </div>
 
     @* Label and input field for PIN password *@
     <div class="accountfield">
         <label>PIN:</label>
-        <InputText class="inputfield" @bind-Value="PIN" type="password" inputmode="numeric" maxlength="4" />
+        <InputText class="inputfield" @bind-Value="_pin" type="password" inputmode="numeric" maxlength="4" />
     </div>
 
     @* Buttons for sign-up and sign-in *@
     <button class="formbutton" type="submit">Sign In</button>
     <button class="formbutton" type="button" @onclick="HandleSignUp">Sign Up</button>
+    
+    @*Success or error message*@
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="accountfield">
+            <p class="@(_isSuccess ? "success-message" : "error-message")">@_message</p>
+        </div>
+    }
 </EditForm>
 
 @code {
     // Variable storing username input
-    private string Username = "";
+    private string _username = "";
     
     // Variable storing PIN input
-    private string PIN = "";
+    private string _pin = "";
     
     // Variable for feedback message
-    private string? Message;
+    private string? _message;
+    
+    // Indicates whether account creation was successful or not
+    private bool _isSuccess;
 
     /// <summary>
     /// Async task for verifying username and PIN in order to login.
@@ -51,19 +56,23 @@
         /* Check if account exists */
         if (string.IsNullOrEmpty(savedUsername) || string.IsNullOrEmpty(savedPIN))
         {
-            Message = "No account found.";
+            _message = "No account found.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
 
         // Compare stored credentials with user input
-        if (Username == savedUsername && PIN == savedPIN)
+        if (_username == savedUsername && _pin == savedPIN)
         {
             Auth.SignIn();
             Nav.NavigateTo("/");
             return;
         }
-
-        Message = "Wrong username or PIN.";
+        
+        _message = "Wrong username or PIN.";
+        _isSuccess = false;
+        Console.WriteLine(_message);
     }
 
     /// <summary>
@@ -73,43 +82,57 @@
     private async Task HandleSignUp()
     {
         // Validates username
-        if (string.IsNullOrWhiteSpace(Username))
+        if (string.IsNullOrWhiteSpace(_username))
         {
-            Message = "Username cannot be empty.";
+            _message = "Username cannot be empty.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
-        if (Username.Length > 8)
+        if (_username.Length > 8)
         {
-            Message = "Username must be max 8 characters.";
+            _message = "Username must be max 8 characters.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
-        if (!Username.All(char.IsLetterOrDigit))
+        if (!_username.All(char.IsLetterOrDigit))
         {
-            Message = "Username can only contain letters and numbers.";
+            _message = "Username can only contain letters and numbers.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
         
         // Validates PIN
-        if (string.IsNullOrWhiteSpace(PIN))
+        if (string.IsNullOrWhiteSpace(_pin))
         {
-            Message = "PIN cannot be empty.";
+            _message = "PIN cannot be empty.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
-        if (!PIN.All(char.IsDigit))
+        if (!_pin.All(char.IsDigit))
         {
-            Message = "PIN must contain digits only.";
+            _message = "PIN must contain digits only.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
-        if (PIN.Length != 4)
+        if (_pin.Length != 4)
         {
-            Message = "PIN must be exactly 4 digits.";
+            _message = "PIN must be exactly 4 digits.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
             return;
         }
         
         // Store username and PIN in local storage
-        await Storage.SetItemAsync("username", Username);
-        await Storage.SetItemAsync("pin", PIN);
+        await Storage.SetItemAsync("username", _username);
+        await Storage.SetItemAsync("pin", _pin);
 
-        Message = "Account created! You can now sign in.";
+        _message = "Account created! You can now sign in.";
+        Console.WriteLine(_message);
+        _isSuccess = true;
     }
 }

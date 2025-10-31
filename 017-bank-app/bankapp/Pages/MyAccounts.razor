@@ -40,7 +40,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
-                    <td>@account.InterestRate.ToString("P2")</td>
+                    <td>@account.InterestRate.ToString("P1")</td>
                     <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }
@@ -76,7 +76,7 @@ else
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
-                    <td>@account.InterestRate.ToString("P2")</td>
+                    <td>@account.InterestRate.ToString("P1")</td>
                     <td>@(account.LastUpdated != default ? account.LastUpdated.ToLocalTime().ToString("d'/'M/yyyy (HH:mm)") : "N/A")</td>
                 </tr>
             }

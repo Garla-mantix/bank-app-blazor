@@ -97,6 +97,14 @@
             _isSuccess = false;
             return;
         }
+        if (_accounts.Any(a => a.Name.Equals(_model.Name, StringComparison.OrdinalIgnoreCase)))
+        {
+            _message = $"An account with the name \"{_model.Name}\" already exists.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
+            return;
+        }
+        
         try
         {
             // Creating account
