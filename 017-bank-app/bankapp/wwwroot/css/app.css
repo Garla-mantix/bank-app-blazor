@@ -128,8 +128,8 @@ code {
 }
 
 .inputfield {
-    flex: 1;
-    max-width: 15rem;
+    position: absolute;
+    left: 27rem;
 }
 
 .formbutton {

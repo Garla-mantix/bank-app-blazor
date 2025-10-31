@@ -16,7 +16,15 @@ public class BankAccount : IBankAccount
     public decimal InterestRate { get; private set; }
     public DateTime? LastInterestApplied { get; private set; }
     
-    // Constructor for creating accounts with an initial deposit.
+   /// <summary>
+   /// Constructor for creating accounts with an initial deposit.
+   /// </summary>
+   /// <param name="name">Name of account</param>
+   /// <param name="accountType">Deposit or savings</param>
+   /// <param name="currencyType">SEK or EURO (disabled)</param>
+   /// <param name="initialBalance">Balance at account creation</param>
+   /// <param name="interestRate">Interest for savings accounts</param>
+   /// <exception cref="ArgumentException">Name cannot be empty</exception>
     public BankAccount(string name, AccountType accountType, CurrencyType currencyType, 
         decimal initialBalance, decimal? interestRate = null)
     {
@@ -104,7 +112,7 @@ public class BankAccount : IBankAccount
     }
     
    /// <summary>
-   /// Transfers funds between two accounts
+   /// Transfers funds between two accounts.
    /// </summary>
    /// <param name="toAccount">Account to receive the transfer</param>
    /// <param name="amount">Amount to transfer</param>
@@ -112,62 +120,67 @@ public class BankAccount : IBankAccount
    /// <exception cref="InvalidOperationException">Cannot transfer to same account as sender</exception>
    /// <exception cref="ArgumentException">Cannot transfer less than 1</exception>
     public void TransferTo(BankAccount toAccount, decimal amount)
+   {
+       if (toAccount == null)
        {
-           if (toAccount == null)
-           {
-               throw new ArgumentNullException(nameof(toAccount));
-           }
-           if (toAccount.Id == Id)
-           {
-               throw new InvalidOperationException("Cannot transfer to the same account.");
-           }
-           if (amount <= 0)
-           {
-               throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
-           }
-           if (amount > Balance)
-           {
-               throw new InvalidOperationException("Insufficient funds.");
-           }
-           
-           // Making the transfer
-           Balance -= amount;
-           toAccount.Balance += amount;
-
-           // Recording the transfer on both accounts
-           Transactions.Add(new Transaction(Id, amount, TransactionType.Transfer, 
-               Balance, toAccount.Name, $"Transfer to {toAccount.Name}"));
-           toAccount.Transactions.Add(new Transaction(toAccount.Id, amount, 
-               TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}"));
+           throw new ArgumentNullException(nameof(toAccount));
        }
-   
-       public void ApplyYearlyInterest()
+       if (toAccount.Id == Id)
        {
-           if (AccountType != AccountType.Savings || InterestRate <= 0)
-               return;
+           throw new InvalidOperationException("Cannot transfer to the same account.");
+       }
+       if (amount <= 0)
+       {
+           throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
+       }
+       if (amount > Balance)
+       {
+           throw new InvalidOperationException("Insufficient funds.");
+       }
+           
+       // Making the transfer
+       Balance -= amount;
+       toAccount.Balance += amount;
 
-           var now = DateTime.Now;
+       // Recording the transfer on both accounts
+       Transactions.Add(new Transaction(Id, amount, TransactionType.Transfer, 
+           Balance, toAccount.Name, $"Transfer to {toAccount.Name}"));
+       toAccount.Transactions.Add(new Transaction(toAccount.Id, amount, 
+           TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}")); 
+   }
+       
+   /// <summary>
+   /// Applies interest rate to saving accounts every 365 days.
+   /// </summary>
+   public void ApplyYearlyInterest()
+   {
+       if (AccountType != AccountType.Savings || InterestRate <= 0)
+       {
+           return;
+       }
 
-           // Apply only if at least a year since last interest
-           if (LastInterestApplied == null || (now - LastInterestApplied.Value).TotalDays >= 1)
+       var now = DateTime.Now;
+
+       // Apply only if at least a year since last interest
+       if (LastInterestApplied == null || (now - LastInterestApplied.Value).TotalDays >= 365)
+       {
+           var interest = Balance * InterestRate;
+           if (interest > 0)
            {
-               var interest = Balance * InterestRate;
-               if (interest > 0)
-               {
-                   Balance += interest;
-                   LastUpdated = now;
-                   LastInterestApplied = now;
+               Balance += interest;
+               LastUpdated = now;
+               LastInterestApplied = now;
 
-                   Transactions.Add(new Transaction(
-                       Id,
-                       interest,
-                       TransactionType.Deposit,
-                       Balance,
-                       null,
-                       "Yearly interest rate"
+               Transactions.Add(new Transaction(
+                   Id,
+                   interest,
+                   TransactionType.Deposit,
+                   Balance,
+                   null,
+                   "Yearly interest rate"
                    ));
                    Console.WriteLine("Yearly interest rate applied: " + InterestRate);
-               }
            }
        }
+   }
 }
