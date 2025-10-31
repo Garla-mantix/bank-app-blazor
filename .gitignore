@@ -53,5 +53,12 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
-.idea/
 .DS_Store
+
+# JetBrains Rider / ReSharper user data
+.idea/
+.idea*/ 
+*.DotSettings.user
+Rider*/  
+**/resharper-host/
+**/.idea/
