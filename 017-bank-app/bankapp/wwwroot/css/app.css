@@ -178,6 +178,16 @@ code {
     background-color: #fd7e14;
 }
 
+/*Messages for success or failure*/
+.success-message{
+    color: green;
+    margin-top: 1rem;
+}
+.error-message{
+    color: red;
+    margin-top: 1rem;
+}
+
 /*History-page*/
 .deposit-row {
     background-color: #e8f5e9; 

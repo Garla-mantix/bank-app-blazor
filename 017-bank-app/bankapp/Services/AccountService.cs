@@ -20,10 +20,16 @@ public class AccountService : IAccountService
         decimal initialBalance)
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
+        
+        if (accounts.Any(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new ArgumentException($"An account with that name already exists.");
+        }
+        
         var newAccount = new BankAccount(name, accountType, currencyType, initialBalance);
         accounts.Add(newAccount);
-        await _storage.SetItemAsync(AccountsKey, accounts);
         Console.WriteLine("A new account has been created.");
+        await _storage.SetItemAsync(AccountsKey, accounts);
         return newAccount;
     }
 
@@ -56,7 +62,7 @@ public class AccountService : IAccountService
     /// <summary>
     /// Withdraws money from an account and records the transaction.
     /// </summary>
-    public async Task WithdrawAsync(Guid accountId, decimal amount)
+    public async Task WithdrawAsync(Guid accountId, decimal amount, BudgetCategory category)
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var account = accounts.FirstOrDefault(a => a.Id == accountId);
@@ -66,14 +72,14 @@ public class AccountService : IAccountService
         }
 
         Console.WriteLine($"Withdrawing {amount:F2} from {account.Name}");
-        account.Withdraw(amount);
+        account.Withdraw(amount, category);
         await _storage.SetItemAsync(AccountsKey, accounts);
     }
 
     /// <summary>
     /// Transfers money between two accounts and records two transactions.
     /// </summary>
-    public async Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount)
+    public async Task TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount, BudgetCategory category)
     {
         var accounts = await _storage.GetItemAsync<List<BankAccount>>(AccountsKey) ?? new();
         var from = accounts.FirstOrDefault(a => a.Id == fromAccountId);
@@ -85,7 +91,7 @@ public class AccountService : IAccountService
         }
         
         Console.WriteLine($"Transfering {amount:F2} from {from.Name} to {to.Name}");
-        from.TransferTo(to, amount);
+        from.TransferTo(to, amount, category);
         await _storage.SetItemAsync(AccountsKey, accounts);
     }
     

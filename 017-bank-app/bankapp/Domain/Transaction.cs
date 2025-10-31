@@ -14,13 +14,15 @@ public class Transaction
     public string? RelatedAccountName { get; private set; }
     public decimal BalanceAfter {get; private set;}
     public string? Description { get; private set; }
+    public BudgetCategory Category { get; set; }
     
     /// <summary>
     /// JSON constructor – recreates a transaction from storage.
     /// </summary>
     [JsonConstructor]
     public Transaction(Guid id, Guid accountId, decimal amount, DateTime timestamp, 
-        TransactionType type, string? relatedAccountName, string? description, decimal balanceAfter)
+        TransactionType type, string? relatedAccountName, string? description, decimal balanceAfter, 
+        BudgetCategory category)
     {
         Id = id;
         AccountId = accountId;
@@ -30,11 +32,12 @@ public class Transaction
         RelatedAccountName = relatedAccountName;
         Description = description;
         BalanceAfter = balanceAfter;
+        Category = category;
     }
     
     // Full constructor, used for creating a transfer-transaction.
     public Transaction(Guid accountId, decimal amount, TransactionType type, decimal balanceAfter, 
-        string? relatedAccountName, string? description)
+        string? relatedAccountName, string? description, BudgetCategory category)
     {
         if (amount <= 0)
         {
@@ -49,6 +52,7 @@ public class Transaction
         RelatedAccountName = relatedAccountName;
         Description = description ?? $"{type} of {amount:C}";
         BalanceAfter = balanceAfter;
+        Category = category;
     }
     
     // Shorter constructor, used for deposits and withdrawals.

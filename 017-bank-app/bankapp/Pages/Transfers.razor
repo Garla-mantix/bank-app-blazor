@@ -53,6 +53,17 @@
                      ValueChanged="(decimal? v) => _model.Amount = v"
                      ValueExpression="() => _model.Amount" />
     </div>
+    
+    @*Label and dropdown menu for budget categories*@
+    <div class="accountfield">
+        <label>Category (optional):</label>
+        <InputSelect class="inputfield" @bind-Value="_model.Category">
+            @foreach (var category in Enum.GetValues<BudgetCategory>())
+            {
+                <option value="@category">@category</option>
+            }
+        </InputSelect>
+    </div>
 
     @*Button for executing transfer*@
     <button class="formbutton" type="submit">Transfer</button>
@@ -127,7 +138,7 @@
         try
         {
             // Make the transfer
-            await AccountService.TransferAsync(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value);
+            await AccountService.TransferAsync(_model.FromAccountId, _model.ToAccountId, _model.Amount.Value, _model.Category);
 
             _message = $"Successfully transferred {_model.Amount:F2}!";
             _isSuccess = true;
@@ -164,5 +175,6 @@
         public Guid FromAccountId { get; set; } = Guid.Empty;
         public Guid ToAccountId { get; set; } = Guid.Empty;
         public decimal? Amount { get; set; }
+        public BudgetCategory Category { get; set; } = BudgetCategory.None;
     }
 }

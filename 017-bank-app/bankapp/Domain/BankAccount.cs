@@ -44,7 +44,7 @@ public class BankAccount : IBankAccount
             : 0m;
         // Logs initial balance as a first deposit
         Transactions.Add(new Transaction(Id, initialBalance, TransactionType.Deposit, 
-            Balance, null, "Initial deposit"));
+            Balance, null, "Initial deposit", BudgetCategory.None));
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class BankAccount : IBankAccount
         LastUpdated = DateTime.Now;
         // Recording the deposit
         Transactions.Add(new Transaction(Id, amount, TransactionType.Deposit, 
-            Balance, null, $"Deposit of {amount:F2}"));
+            Balance, null, $"Deposit of {amount:F2}", BudgetCategory.None));
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class BankAccount : IBankAccount
     /// </summary>
     /// <param name="amount">Amount to withdraw</param>
     /// <exception cref="ArgumentException">Cannot withdraw less than 1</exception>
-    public void Withdraw(decimal amount)
+    public void Withdraw(decimal amount, BudgetCategory category)
     {
         if (amount <= 0)
         {
@@ -108,7 +108,7 @@ public class BankAccount : IBankAccount
         LastUpdated = DateTime.Now;
         // Recording the transaction
         Transactions.Add(new Transaction(Id, amount, TransactionType.Withdrawal, 
-            Balance, null, $"Withdrawal of {amount:F2}"));
+            Balance, null, $"Withdrawal of {amount:F2}", category));
     }
     
    /// <summary>
@@ -119,7 +119,7 @@ public class BankAccount : IBankAccount
    /// <exception cref="ArgumentNullException">Has to have a receiver account</exception>
    /// <exception cref="InvalidOperationException">Cannot transfer to same account as sender</exception>
    /// <exception cref="ArgumentException">Cannot transfer less than 1</exception>
-    public void TransferTo(BankAccount toAccount, decimal amount)
+    public void TransferTo(BankAccount toAccount, decimal amount, BudgetCategory category)
    {
        if (toAccount == null)
        {
@@ -144,9 +144,9 @@ public class BankAccount : IBankAccount
 
        // Recording the transfer on both accounts
        Transactions.Add(new Transaction(Id, amount, TransactionType.Transfer, 
-           Balance, toAccount.Name, $"Transfer to {toAccount.Name}"));
+           Balance, toAccount.Name, $"Transfer to {toAccount.Name}", category));
        toAccount.Transactions.Add(new Transaction(toAccount.Id, amount, 
-           TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}")); 
+           TransactionType.Transfer, toAccount.Balance, Name, $"Transfer from {Name}", category)); 
    }
        
    /// <summary>
@@ -177,9 +177,10 @@ public class BankAccount : IBankAccount
                    TransactionType.Deposit,
                    Balance,
                    null,
-                   "Yearly interest rate"
+                   "Yearly interest rate",
+                   BudgetCategory.None
                    ));
-                   Console.WriteLine("Yearly interest rate applied: " + InterestRate);
+                   Console.WriteLine($"Yearly interest rate applied: {InterestRate:P1}");
            }
        }
    }

@@ -14,6 +14,6 @@ public interface IBankAccount
     decimal InterestRate { get; }
     
     void Deposit(decimal amount);
-    void Withdraw(decimal amount);
-    void TransferTo(BankAccount toAccount, decimal amount);
+    void Withdraw(decimal amount, BudgetCategory category);
+    void TransferTo(BankAccount toAccount, decimal amount, BudgetCategory category = BudgetCategory.None);
 }
