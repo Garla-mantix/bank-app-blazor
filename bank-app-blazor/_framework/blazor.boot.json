@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "bankapp",
   "resources": {
-    "hash": "sha256-vljG9kio0bdmHo6XGXhxW7GkDkr/jkMWOVsqlZJ/z+0=",
+    "hash": "sha256-ly/cswBispp87O0YFVW/fB4qAVMutuP+2R0UydFOd30=",
     "jsModuleNative": {
       "dotnet.native.8.0.21.pm3982wfj6.js": "sha256-9Fzd5We95Rp03dEKIAbYjPDR3eWyLbmjMlYStvxyiok="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "bankapp.wasm": "sha256-lX/nem4vl64ORG98zpveOZubk1Y6HxxSdtjfLHZcW38=",
+      "bankapp.wasm": "sha256-TKgq6aN/YtilzotLNpsKRBL9G+PbOWBqnvt3H/RDULg=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-aLR3mwUZpbk8WOHNwsqmncLYKDyEjOFnXnbPjo0qRK0=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-ujT1rohTjVnzWPmo5b3zoW6tejQQoa1abOJ34uUSt9A=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-9eB8VfzKG6u10T5TSPft228mmKGQueaMD9z9fiYx4k8=",
