@@ -9,11 +9,13 @@ The app simulates a simple banking system, where data persist using the browser'
 
 ### Features
 
+- Simple sign-up/sign-in (UI lock, no real security)
 - Create new accounts  
 - View existing accounts  
 - Deposit and withdraw funds  
 - Transfer money between accounts  
-- Browse, sort and filter transaction history 
+- Browse, sort and filter transaction history
+- Interest rate every 365 days for savings accounts
 
 ### Technologies used
 
@@ -28,7 +30,7 @@ The app simulates a simple banking system, where data persist using the browser'
 ### Domain – _Core business logic and data models_
 * Business logic: BankAccount and Transaction (handles deposit/withdrawals and transfers,  
   maintaining a consistent balance and transaction list).
-* Data models: Enums for AccountType, TransactionType and CurrencyType.
+* Data models: Enums for AccountType, TransactionType, CurrencyType and BudgetCatogory.
 
 ### Interfaces – _Abstractions for services_
 * IAccountService: Defines what services can do.
@@ -62,14 +64,13 @@ The app simulates a simple banking system, where data persist using the browser'
 
 ## What's next?
 For the future there are some things that we could improve on:
-* User login and authentication.
-* Integration with a real database (e.g. SQLite).
-* Exporting/importing data via JSON.
+* Integration with a real database (e.g. SQLite) instead of local storage.
+* Improve login and authentication (several login-accounts stored in a database and bank accounts/transactions linked to those login-accounts).
 * Improved responsiveness and UI.
 * Make it possible to navigate to a specific account's transaction history from the My Accounts-page.
 * Make currency exchange possible when transferring funds between accounts with different currencies.
-* Budget categories for withdrawals and exportable monthly expense reports.
-* Interest rates on savings accounts.
+* Exporting/importing data via JSON (e.g. monthly expense reports).
+* Change Balance and Interest Rates to double instead of decimal for more accurate math.
 <br/>
 
 ## How to check out the app
