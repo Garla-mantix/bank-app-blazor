@@ -201,3 +201,7 @@ code {
     background-color: #e3f2fd; 
 }
 
+.select-acc:hover {
+    cursor: pointer;
+}
+

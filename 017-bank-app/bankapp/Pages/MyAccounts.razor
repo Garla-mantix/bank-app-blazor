@@ -1,5 +1,7 @@
 @page "/MyAccounts"
 @inject IAccountService AccountService
+@inject NavigationManager Nav
+@inject SelectedAccountStatus SelectedStatus
 
 <PageTitle>Bankster - My Accounts</PageTitle>
 
@@ -36,7 +38,7 @@ else
             <tbody>
             @foreach (var account in _depositAccounts)
             {
-                <tr>
+                <tr class="select-acc" @onclick="() => NavigateToHistory(account.Id)">
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
@@ -72,7 +74,7 @@ else
             <tbody>
             @foreach (var account in _savingsAccounts)
             {
-                <tr>
+                <tr class="select-acc" @onclick="() => NavigateToHistory(account.Id)">
                     <td><strong>@account.Name</strong></td>
                     <td>@account.Balance.ToString("F2")</td>
                     <td>@account.CurrencyType</td>
@@ -109,5 +111,12 @@ else
         _savingsAccounts = allAccounts
             .Where(a => a.AccountType == AccountType.Savings)
             .ToList();
+    }
+    
+    // Navigate to History with account selected
+    private void NavigateToHistory(Guid accountId)
+    {
+        SelectedStatus.SelectedAccountId = accountId;
+        Nav.NavigateTo("/History");
     }
 }

@@ -1,5 +1,6 @@
 @page "/History"
 @inject IAccountService AccountService
+@inject SelectedAccountStatus SelectedStatus
 
 <PageTitle>Bankster - History</PageTitle>
 
@@ -10,12 +11,12 @@
     @*Label and dropdown menu for choosing an account*@
     <div class="accountfield">
         <label>Select Account:</label>
-        <InputSelect TValue="Guid"
+        <InputSelect TValue="Guid?"
                      class="inputfield"
                      Value="_filterModel.SelectedAccountId"
-                     ValueChanged="(Guid v) => { _filterModel.SelectedAccountId = v; ApplyFilters(); }"
+                     ValueChanged="(Guid? v) => { _filterModel.SelectedAccountId = v; ApplyFilters(); }"
                      ValueExpression="() => _filterModel.SelectedAccountId">
-            <option value="@Guid.Empty">Choose account</option>
+            <option value="">Choose account</option>
             @foreach (var account in _accounts)
             {
                 <option value="@account.Id">@account.Name (@account.CurrencyType)</option>
@@ -24,7 +25,8 @@
     </div>
 
     @*Making sure an account has been selected before showing other filters*@
-    @if (_filterModel.SelectedAccountId != Guid.Empty)
+    @if (_filterModel.SelectedAccountId != null 
+         && _accounts.Any(a => a.Id == _filterModel.SelectedAccountId.Value))
     {
         // Label and dropdown menu for transaction type
         <div class="accountfield">
@@ -115,7 +117,8 @@
 </EditForm>
 
 @*Validation*@
-@if (_filterModel.SelectedAccountId == Guid.Empty)
+@if (_filterModel.SelectedAccountId == null || 
+     !_accounts.Any(a => a.Id == _filterModel.SelectedAccountId.Value))
 {
     <div class="accountfield"><p>Please select an account to view its history.</p></div>
 }
@@ -178,20 +181,24 @@ else
     {
         var accounts = await AccountService.GetAccounts();
         _accounts = accounts.Cast<BankAccount>().ToList();
+        _filterModel.SelectedAccountId = null;
         _transactions = new();
+        
+        // Preselect clicked account from MyAccounts
+        if (SelectedStatus.SelectedAccountId != Guid.Empty)
+        {
+            _filterModel.SelectedAccountId = SelectedStatus.SelectedAccountId.GetValueOrDefault();
+            ApplyFilters();
+            SelectedStatus.SelectedAccountId = Guid.Empty;
+        }
     }
 
     // Applying filters
     private void ApplyFilters()
     {
-        if (_filterModel.SelectedAccountId == Guid.Empty)
-        {
-            _transactions = new();
-            StateHasChanged();
-            return;
-        }
-
-        var selectedAccount = _accounts.FirstOrDefault(a => a.Id == _filterModel.SelectedAccountId);
+        var selectedAccount = _filterModel.SelectedAccountId == null
+            ? null
+            : _accounts.FirstOrDefault(a => a.Id == _filterModel.SelectedAccountId.Value);
         
         if (selectedAccount == null)
         {
@@ -275,7 +282,7 @@ else
     // Model storing filtering and sorting selections
     private class FilterModel
     {
-        public Guid SelectedAccountId { get; set; } = Guid.Empty;
+        public Guid? SelectedAccountId { get; set; } = null;
         public TransactionType? TransactionType { get; set; }
         public BudgetCategory? Category { get; set; }
         public DateTime? FromDate { get; set; }

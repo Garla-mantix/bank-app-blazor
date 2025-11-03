@@ -14,6 +14,9 @@ builder.Services.AddScoped<IStorageService, StorageService>();
 // Signed-in status
 builder.Services.AddScoped<SignedInStatus>();
 
+// Selected account status
+builder.Services.AddScoped<SelectedAccountStatus>();
+
 // HTTP client
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
