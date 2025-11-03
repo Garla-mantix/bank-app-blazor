@@ -5,23 +5,25 @@
 
 <h1>Sign In</h1>
 
+@*Form for sign-in/sign-up*@
 <EditForm Model="this" OnValidSubmit="HandleSignIn">
+    
     @* Label and input field for username *@
     <div class="accountfield">
         <label>Username:</label>
-        <InputText class="inputfield" @bind-Value="_username" />
+        <InputText class="inputfield" @bind-Value="_username"/>
     </div>
 
     @* Label and input field for PIN password *@
     <div class="accountfield">
         <label>PIN:</label>
-        <InputText class="inputfield" @bind-Value="_pin" type="password" inputmode="numeric" maxlength="4" />
+        <InputText class="inputfield" @bind-Value="_pin" type="password" inputmode="numeric" maxlength="4"/>
     </div>
 
     @* Buttons for sign-up and sign-in *@
     <button class="formbutton" type="submit">Sign In</button>
     <button class="formbutton" type="button" @onclick="HandleSignUp">Sign Up</button>
-    
+
     @*Success or error message*@
     @if (!string.IsNullOrEmpty(_message))
     {
@@ -49,11 +51,11 @@
     /// </summary>
     private async Task HandleSignIn()
     {
-        /* Load stored username and PIN */
+        // Load stored username and PIN
         var savedUsername = await Storage.GetItemAsync<string>("username");
         var savedPIN = await Storage.GetItemAsync<string>("pin");
 
-        /* Check if account exists */
+        // Check if account exists
         if (string.IsNullOrEmpty(savedUsername) || string.IsNullOrEmpty(savedPIN))
         {
             _message = "No account found.";

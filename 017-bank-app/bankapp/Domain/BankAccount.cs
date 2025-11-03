@@ -68,7 +68,7 @@ public class BankAccount : IBankAccount
     }
     
     /// <summary>
-    /// Deposits an amount to a bank account's balance
+    /// Deposits an amount to a bank account's balance.
     /// </summary>
     /// <param name="amount">Amount to deposit</param>
     /// <exception cref="ArgumentException">Cannot deposit less than 1</exception>
@@ -88,7 +88,7 @@ public class BankAccount : IBankAccount
     }
 
     /// <summary>
-    /// Withdraws an amount from a bank account's balance
+    /// Withdraws an amount from a bank account's balance.
     /// </summary>
     /// <param name="amount">Amount to withdraw</param>
     /// <exception cref="ArgumentException">Cannot withdraw less than 1</exception>
@@ -117,7 +117,8 @@ public class BankAccount : IBankAccount
    /// <param name="toAccount">Account to receive the transfer</param>
    /// <param name="amount">Amount to transfer</param>
    /// <exception cref="ArgumentNullException">Has to have a receiver account</exception>
-   /// <exception cref="InvalidOperationException">Cannot transfer to same account as sender</exception>
+   /// <exception cref="InvalidOperationException">Cannot transfer to same account as sender,
+   /// and balance needs to be equal or greater than amount</exception>
    /// <exception cref="ArgumentException">Cannot transfer less than 1</exception>
     public void TransferTo(BankAccount toAccount, decimal amount, BudgetCategory category)
    {

@@ -91,24 +91,24 @@
     // Async task for making transactions
     private async Task SubmitTransactionAsync()
     {
+        // Validation
+        if (_model.SelectedAccountId == Guid.Empty)
+        {
+            _message = "Please select an account.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
+            return;
+        }
+        if (_model.Amount is null or <= 0)
+        {
+            _message = "Amount must be greater than zero.";
+            Console.WriteLine(_message);
+            _isSuccess = false;
+            return;
+        }
+        
         try
         {
-            // Validation
-            if (_model.SelectedAccountId == Guid.Empty)
-            {
-                _message = "Please select an account.";
-                Console.WriteLine(_message);
-                _isSuccess = false;
-                return;
-            }
-            if (_model.Amount is null or <= 0)
-            {
-                _message = "Amount must be greater than zero.";
-                Console.WriteLine(_message);
-                _isSuccess = false;
-                return;
-            }
-            
             var selectedAccountId = _model.SelectedAccountId;
 
             // Performs transaction

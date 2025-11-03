@@ -7,7 +7,7 @@
 
 <h1>Your Accounts</h1>
 
-@*Checking if there are any existing accounts*@
+@*Checking if there are any existing accounts at all*@
 @if ((_depositAccounts.Count + _savingsAccounts.Count) == 0)
 {
     <p>You have no accounts yet.</p>
@@ -94,7 +94,7 @@ else
     // List for existing savings accounts
     private List<IBankAccount> _savingsAccounts = new();
 
-    // Initialize by loading all accounts and separating them by type
+    // Initialize by loading all accounts and separating them by type (and applying interest)
     protected override async Task OnInitializedAsync()
     {
         // Apply interest

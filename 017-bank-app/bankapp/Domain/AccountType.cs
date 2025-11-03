@@ -1,4 +1,5 @@
 namespace bankapp.Domain;
+
 /// <summary>
 /// Enum for types of account.
 /// </summary>

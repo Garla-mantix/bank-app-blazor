@@ -1,4 +1,5 @@
 namespace bankapp.Interfaces;
+
 /// <summary>
 /// Interface for saving and retrieving data from local storage.
 /// </summary>
