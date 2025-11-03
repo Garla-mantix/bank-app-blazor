@@ -13,9 +13,10 @@ The app simulates a simple banking system, where data persist using the browser'
 - Create new accounts  
 - View existing accounts  
 - Deposit and withdraw funds  
-- Transfer money between accounts  
+- Transfer money between accounts
+- Budget categories for withdrawals and transfers (optional)  
 - Browse, sort and filter transaction history
-- Interest rate every 365 days for savings accounts
+- Interest rate added for initial balance and every 365 days for savings accounts
 
 ### Technologies used
 
@@ -40,6 +41,8 @@ The app simulates a simple banking system, where data persist using the browser'
 ### Services – _Implementation of application workflow and data persistence_
 * AccountService: Implements workflow of banking operations.
 * StorageService: Saving and retrieving data from local storage.
+* SignedInStatus: Simple status for signed in state.
+* SelectedAccountStatus: Makes it possible to click an account in My Accounts and go directly to the transaction history for that account.
 
 ### Pages – _UI_
 * Blazor-components for displaying and user interaction.
@@ -67,10 +70,9 @@ For the future there are some things that we could improve on:
 * Integration with a real database (e.g. SQLite) instead of local storage.
 * Improve login and authentication (several login-accounts stored in a database and bank accounts/transactions linked to those login-accounts).
 * Improved responsiveness and UI.
-* Make it possible to navigate to a specific account's transaction history from the My Accounts-page.
 * Make currency exchange possible when transferring funds between accounts with different currencies.
 * Exporting/importing data via JSON (e.g. monthly expense reports).
-* Change Balance and Interest Rates to double instead of decimal for more accurate math.
+* Change Balance and Interest Rates to doubles instead of decimals for more accurate math.
 <br/>
 
 ## How to check out the app
