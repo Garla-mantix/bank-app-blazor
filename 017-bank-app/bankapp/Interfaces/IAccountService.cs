@@ -1,4 +1,5 @@
 namespace bankapp.Interfaces;
+
 /// <summary>
 /// Interface for creating accounts, listing them and performing banking operations.
 /// </summary>
