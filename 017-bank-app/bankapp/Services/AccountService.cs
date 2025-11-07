@@ -34,7 +34,7 @@ public class AccountService : IAccountService
     }
 
     /// <summary>
-    /// Retrieves all saved accounts. Also applies interest and saves if necessary.
+    /// Retrieves all saved accounts.
     /// </summary>
     public async Task<List<IBankAccount>> GetAccounts()
     {

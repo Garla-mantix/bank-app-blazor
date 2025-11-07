@@ -1,5 +1,8 @@
 namespace bankapp.Services;
 
+/// <summary>
+/// Tracks whether the user is logged in or not. Used for UI-lock.
+/// </summary>
 public class SignedInStatus
 {
     public bool IsSignedIn { get; private set; } = false;

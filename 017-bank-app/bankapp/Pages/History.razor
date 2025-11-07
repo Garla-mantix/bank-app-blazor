@@ -269,7 +269,7 @@ else
     private string GetAccountName(Guid id)
         => _accounts.FirstOrDefault(a => a.Id == id)?.Name ?? "Unknown";
 
-    // Assigns CSS class according to transaction type
+    // Assigns CSS class according to transaction type (used for coloring rows).
     private static string GetTransactionRowClass(TransactionType type) => type switch
     {
         TransactionType.Deposit => "deposit-row",
