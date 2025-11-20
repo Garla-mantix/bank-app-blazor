@@ -72,7 +72,6 @@ For the future there are some things that we could improve on:
 * Improved responsiveness and UI.
 * Make currency exchange possible when transferring funds between accounts with different currencies.
 * Exporting/importing data via JSON (e.g. monthly expense reports).
-* Change Balance and Interest Rates to doubles instead of decimals for more accurate math.
 <br/>
 
 ## How to check out the app
