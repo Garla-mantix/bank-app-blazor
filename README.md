@@ -1,11 +1,13 @@
 # Bankster - A Banking Webapp in Blazor (.NET)
 
+#### Video Demo: https://www.youtube.com/watch?v=pvRQ86uyNDQ
+#### Deployed at: https://bankster-fnhvfzhub3bpcpe9.swedencentral-01.azurewebsites.net/
+
 ## Description
 
 Welcome to this project for a Blazor WebAssembly application using .NET 8.  
 I have previously done some websites and apps using HTML, CSS and Javascript (with Tailwind, React, Bootstrap, SCSS etc)
-– but the goal during this project was to get familiar with Blazor and learn more about clean architecture principles.
-The app simulates a simple banking system, where data persist using the browser's local storage. 
+– but the goal during this project was to get familiar with Blazor and learn more about clean architecture principles. The app simulates a simple banking system, where data persist using the browser's local storage. 
 
 ### Features
 
@@ -16,7 +18,7 @@ The app simulates a simple banking system, where data persist using the browser'
 - Transfer money between accounts
 - Budget categories for withdrawals and transfers (optional)  
 - Browse, sort and filter transaction history
-- Interest rate added for initial balance and every 365 days for savings accounts
+- Interest rate added for initial balance and every 365 days (for savings accounts)
 
 ### Technologies used
 
@@ -58,7 +60,7 @@ The app simulates a simple banking system, where data persist using the browser'
 ## Why this structure?
 *  Using this type of architecture, the goal is to create independent layers that are easier to maintain.  
    For example we could replace parts of the infrastructure, e.g. swap the use of local storage for a real database later.
-   The connections remain the same, we only need to change the end point, so to speak.
+   The connections remain the same, we only need to change the endpoint, so to speak.
 * We divide responsibilities between several classes, so that each class does one thing well.  
   This creates better clarity, and if something breaks it probably easier to figure out where to look for the solution,  
   compared to if we had one single class stuffed with all the logic of the whole app.
@@ -67,7 +69,7 @@ The app simulates a simple banking system, where data persist using the browser'
 
 ## What's next?
 For the future there are some things that we could improve on:
-* Integration with a real database (e.g. SQLite) instead of local storage.
+* Integration with a real database (e.g. Postgres) instead of local storage.
 * Improve login and authentication (several login-accounts stored in a database and bank accounts/transactions linked to those login-accounts).
 * Improved responsiveness and UI.
 * Make currency exchange possible when transferring funds between accounts with different currencies.
